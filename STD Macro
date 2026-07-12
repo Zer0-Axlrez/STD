@@ -1,0 +1,265 @@
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "STD Macro",
+   LoadingTitle = "Loading Systems...",
+   LoadingSubtitle = "Hot Damn Nigger Edition",
+   ConfigurationSaving = { 
+      Enabled = true,
+      FolderName = "SorcererMacroConfigs",
+      FileName = "FarmSettings"
+   }
+})
+
+local AutomationTab = Window:CreateTab("Auto Farm", 4483362456)
+local ManualTab = Window:CreateTab("Manual Control", 4483362456)
+local SupportTab = Window:CreateTab("Support Units", 4483362456)
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Remotes = ReplicatedStorage:WaitForChild("Remotes", 5) 
+local AutoSkipEvent = Remotes and Remotes:WaitForChild("AutoSkip", 5) 
+
+local Functions = ReplicatedStorage:WaitForChild("Functions", 5)
+local SpawnTowerFunction = Functions and Functions:WaitForChild("SpawnNewTower", 5)
+local UpgradeTowerFunction = Functions and Functions:WaitForChild("UpgradeTower", 5)
+
+local MomoPlaced = false
+
+local function SafeUpgrade(TargetName)
+   if not UpgradeTowerFunction then return end
+   
+   local Workspace = game:GetService("Workspace")
+   local folders = {Workspace:FindFirstChild("Towers"), Workspace:FindFirstChild("PlacedTowers"), Workspace:FindFirstChild("Units"), Workspace}
+   
+   for _, folder in pairs(folders) do
+      if folder then
+         for _, Object in pairs(folder:GetChildren()) do
+            if Object and Object.Name and string.find(string.lower(Object.Name), string.lower(TargetName)) then
+               if Object:IsA("Model") or Object:IsA("Folder") or Object:IsA("ValueBase") then
+                  task.spawn(function()
+                     local ServerTarget = Object
+                     if Object:FindFirstChild("Config") or Object:FindFirstChild("Configuration") then
+                        ServerTarget = Object
+                     end
+                     UpgradeTowerFunction:InvokeServer(ServerTarget)
+                  end)
+                  task.wait(0.02)
+               end
+            end
+         end
+      end
+   end
+end
+
+AutomationTab:CreateSection("Master Control")
+
+AutomationTab:CreateToggle({
+   Name = "ENABLE AUTO FARM LOOP",
+   CurrentValue = false,
+   Flag = "MasterAutoFarmLoop",
+   Callback = function() end,
+})
+
+AutomationTab:CreateSection("Farm Priority Checklist")
+
+AutomationTab:CreateToggle({
+   Name = "1. Auto Mahito (Priority)",
+   CurrentValue = false,
+   Flag = "QueueMahito",
+   Callback = function() end,
+})
+
+AutomationTab:CreateToggle({
+   Name = "2. Auto Money Agents",
+   CurrentValue = false,
+   Flag = "QueueAgents",
+   Callback = function() end,
+})
+
+AutomationTab:CreateToggle({
+   Name = "3. Auto Momo Nishimiya",
+   CurrentValue = false,
+   Flag = "QueueMomo",
+   Callback = function() end,
+})
+
+AutomationTab:CreateToggle({
+   Name = "4. Auto Utahime Lori",
+   CurrentValue = false,
+   Flag = "QueueUtahime",
+   Callback = function() end,
+})
+
+task.spawn(function()
+   task.wait(2) 
+   
+   while true do
+      task.wait(1) 
+      
+      if Rayfield.Flags and Rayfield.Flags.MasterAutoFarmLoop and Rayfield.Flags.MasterAutoFarmLoop.CurrentValue then
+         
+         -- TASK 1: MAHITO COMBAT SYSTEMS
+         if Rayfield.Flags.QueueMahito and Rayfield.Flags.QueueMahito.CurrentValue and SpawnTowerFunction then
+            SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(51.454769134521, 8.5099258422852, -125.18762207031, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(1)
+            SafeUpgrade("SoulCurse")
+            task.wait(1)
+         end
+         
+         -- TASK 2: MONEY AGENT SYSTEMS
+         if Rayfield.Flags.QueueAgents and Rayfield.Flags.QueueAgents.CurrentValue and SpawnTowerFunction then
+            SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(0.1)
+            SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(0.1)
+            SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(46.969585418701, 8.510612487793, -145.1955871582, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(0.1)
+            SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(41.046390533447, 8.5106134414673, -145.1208190918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(0.1)
+            
+            SafeUpgrade("SorcererAgent")
+            task.wait(1)
+         end
+         
+         -- TASK 3: NISHIMIYA BUFFS (MOMO)
+         if Rayfield.Flags.QueueMomo and Rayfield.Flags.QueueMomo.CurrentValue and SpawnTowerFunction then
+            if not MomoPlaced then
+               SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(46.699993133545, 8.498929977417, -124.27536010742, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+               MomoPlaced = true
+               task.wait(1)
+            end
+            SafeUpgrade("BroomSorcerer")
+            task.wait(1)
+         end
+         
+         -- TASK 4: LORI BUFFS (UTAHIME)
+         if Rayfield.Flags.QueueUtahime and Rayfield.Flags.QueueUtahime.CurrentValue and SpawnTowerFunction then
+            SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(55.824909210205, 8.2544298171997, -124.13116455078, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(1)
+            SafeUpgrade("AmplifyingSorcerer")
+            task.wait(1)
+         end
+
+      end
+   end
+end)
+
+local toggleState = false
+local AutoSkipToggle
+
+AutoSkipToggle = ManualTab:CreateToggle({
+   Name = "AutoSkip Status",
+   CurrentValue = false,
+   Flag = "AutoSkipToggleFlag",
+   Callback = function(Value)
+      toggleState = Value
+      if AutoSkipEvent then AutoSkipEvent:FireServer() end
+   end,
+})
+
+ManualTab:CreateButton({
+   Name = "Trigger AutoSkip",
+   Interact = "Click",
+   Callback = function()
+      toggleState = not toggleState
+      AutoSkipToggle:Set(toggleState)
+   end,
+})
+
+ManualTab:CreateSection("Money Agent Systems")
+
+ManualTab:CreateButton({
+   Name = "Place All Money Agents",
+   Interact = "Click",
+   Callback = function()
+      if SpawnTowerFunction then
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(46.969585418701, 8.510612487793, -145.1955871582, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(41.046390533447, 8.5106134414673, -145.1208190918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+      end
+   end,
+})
+
+ManualTab:CreateButton({
+   Name = "Upgrade Money Agent to T2",
+   Interact = "Click",
+   Callback = function() SafeUpgrade("SorcererAgent") end,
+})
+
+ManualTab:CreateSection("Mahito Combat Systems")
+
+ManualTab:CreateButton({
+   Name = "Place Mahito",
+   Interact = "Click",
+   Callback = function()
+      if SpawnTowerFunction then
+         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(51.454769134521, 8.5099258422852, -125.18762207031, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+      end
+   end,
+})
+
+ManualTab:CreateButton({
+   Name = "Upgrade Mahito",
+   Interact = "Click",
+   Callback = function() SafeUpgrade("SoulCurse") end,
+})
+
+SupportTab:CreateSection("Nishimiya Buffs")
+SupportTab:CreateButton({
+   Name = "Place Momo Nishimiya",
+   Interact = "Click",
+   Callback = function()
+      if SpawnTowerFunction then
+         SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(46.699993133545, 8.498929977417, -124.27536010742, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+      end
+   end,
+})
+
+SupportTab:CreateButton({
+   Name = "Upgrade Momo Nishimiya",
+   Interact = "Click",
+   Callback = function() SafeUpgrade("BroomSorcerer") end,
+})
+
+SupportTab:CreateSection("Lori Buffs")
+SupportTab:CreateButton({
+   Name = "Place Utahime Lori",
+   Interact = "Click",
+   Callback = function()
+      if SpawnTowerFunction then
+         SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(55.824909210205, 8.2544298171997, -124.13116455078, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+      end
+   end,
+})
+
+SupportTab:CreateButton({
+   Name = "Upgrade Utahime Lori",
+   Interact = "Click",
+   Callback = function() SafeUpgrade("AmplifyingSorcerer") end,
+})
+
+SupportTab:CreateSection("Kirara Hoshi")
+SupportTab:CreateButton({
+   Name = "Place All Kirara Hoshis",
+   Interact = "Click",
+   Callback = function()
+      if SpawnTowerFunction then
+         SpawnTowerFunction:InvokeServer("c247b6f3-ed09-43e6-91b3-aa902d157b9a", CFrame.new(42.327922821045, 8.8049278259277, -125.73871612549, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("c247b6f3-ed09-43e6-91b3-aa902d157b9a", CFrame.new(42.751289367676, 8.8049278259277, -121.67692565918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+      end
+   end,
+})
+
+SupportTab:CreateButton({
+   Name = "Upgrade Kirara Hoshi",
+   Interact = "Click",
+   Callback = function() SafeUpgrade("StarsSorcerer") end,
+})
+
+Rayfield:LoadConfiguration()
