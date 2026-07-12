@@ -1,9 +1,10 @@
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
 
+
 local Window = Rayfield:CreateWindow({
    Name = "STD Macro",
    LoadingTitle = "Loading Systems...",
-   LoadingSubtitle = "Hot Damn Nigger Edition",
+   LoadingSubtitle = "Automating...",
    ConfigurationSaving = { 
       Enabled = true,
       FolderName = "SorcererMacroConfigs",
@@ -11,7 +12,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
--- Create the Tabs (Added STAGE 10(HM) for mobile optimization)
+-- Create the Tabs
 local AutomationTab = Window:CreateTab("Auto Farm", 4483362456)
 local Stage10Tab = Window:CreateTab("STAGE 10(HM)", 4483362456)
 local ManualTab = Window:CreateTab("Manual Control", 4483362456)
@@ -20,6 +21,9 @@ local SupportTab = Window:CreateTab("Support Units", 4483362456)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Remotes = ReplicatedStorage:WaitForChild("Remotes", 5) 
 local AutoSkipEvent = Remotes and Remotes:WaitForChild("AutoSkip", 5) 
+
+local Events = ReplicatedStorage:WaitForChild("Events", 5)
+local ReplayEvent = Events and Events:WaitForChild("Replay", 5)
 
 local Functions = ReplicatedStorage:WaitForChild("Functions", 5)
 local SpawnTowerFunction = Functions and Functions:WaitForChild("SpawnNewTower", 5)
@@ -127,12 +131,14 @@ task.spawn(function()
          -- TASK 2: MONEY AGENT SYSTEMS
          if Rayfield.Flags.QueueAgents and Rayfield.Flags.QueueAgents.CurrentValue and SpawnTowerFunction then
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-            task.wait(1)
+            task.wait(0.1)
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-            task.wait(1)
+            task.wait(0.1)
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(46.969585418701, 8.510612487793, -145.1955871582, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-            task.wait(1)
+            task.wait(0.1)
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(41.046390533447, 8.5106134414673, -145.1208190918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(0.1)
+            SafeUpgrade("SoulCurse")
             task.wait(1)
             
             SafeUpgrade("SorcererAgent")
@@ -188,7 +194,7 @@ task.spawn(function()
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(80.230987548828, 35.875606536865, -133.20204162598, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(0.1)
             SafeUpgrade("SoulCurse")
-            task.wait(1)
+            task.wait(0.5)
             
             SafeUpgrade("SorcererAgent")
             task.wait(1)
@@ -196,6 +202,19 @@ task.spawn(function()
       end
    end
 end)
+
+task.spawn(function()
+   while true do
+      task.wait(1) -- Evaluation checking window
+      if Rayfield.Flags and Rayfield.Flags.AutoPlayNextFlag and Rayfield.Flags.AutoPlayNextFlag.CurrentValue then
+         if ReplayEvent then
+            ReplayEvent:FireServer()
+         end
+      end
+   end
+end)
+
+ManualTab:CreateSection("Stage Progression Options")
 
 local toggleState = false
 local AutoSkipToggle
@@ -211,12 +230,20 @@ AutoSkipToggle = ManualTab:CreateToggle({
 })
 
 ManualTab:CreateButton({
-   Name = "Trigger AutoSkip",
+   Name = "Trigger AutoSkip Once",
    Interact = "Click",
    Callback = function()
       toggleState = not toggleState
       AutoSkipToggle:Set(toggleState)
    end,
+})
+
+-- Added requested continuous Auto-Replay feature cleanly underneath AutoSkip
+ManualTab:CreateToggle({
+   Name = "Auto Play Next / Auto Replay",
+   CurrentValue = false,
+   Flag = "AutoPlayNextFlag",
+   Callback = function() end,
 })
 
 ManualTab:CreateSection("Money Agent Systems")
@@ -269,7 +296,7 @@ SupportTab:CreateButton({
       if SpawnTowerFunction then
          SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(46.699993133545, 8.498929977417, -124.27536010742, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
       end
-   end,
+   end
 })
 
 SupportTab:CreateButton({
@@ -313,6 +340,5 @@ SupportTab:CreateButton({
    Interact = "Click",
    Callback = function() SafeUpgrade("StarsSorcerer") end,
 })
-
 
 Rayfield:LoadConfiguration()
