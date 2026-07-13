@@ -290,10 +290,10 @@ task.spawn(function()
          
          -- TASK 1: MAHITO COMBAT SYSTEMS
          if Rayfield.Flags.SukunaMahito and Rayfield.Flags.SukunaMahito.CurrentValue and SpawnTowerFunction then
-            SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(-52.153255462646, 7.8088941574097, -50.821315765381, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(-50.173458099365, 7.8088941574097, -89.774597167969, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),    nil)
             task.wait(1)
             SafeUpgrade("SoulCurse")
-            task.wait(1)
+            task.wait(0.1)
          end
          
          -- TASK 2: MONEY AGENT SYSTEMS (Stacking 4 agents on a single CFrame coordinate)
@@ -316,18 +316,22 @@ task.spawn(function()
          -- TASK 3: NISHIMIYA BUFFS (MOMO - Safe 1x placement only)
          if Rayfield.Flags.SukunaMomo and Rayfield.Flags.SukunaMomo.CurrentValue and SpawnTowerFunction then
             if not SukunaMomoPlaced then
-               SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(-50.710391998291, 7.7978930473328, -54.597816467285, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+               SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(-52.972927093506, 7.7978940010071, -93.06217956543, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),    nil)
                SukunaMomoPlaced = true
                task.wait(1)
             end
+            SafeUpgrade("SoulCurse")
+            task.wait(0.1)
             SafeUpgrade("BroomSorcerer")
             task.wait(1)
          end
          
          -- TASK 4: LORI BUFFS (UTAHIME)
          if Rayfield.Flags.SukunaUtahime and Rayfield.Flags.SukunaUtahime.CurrentValue and SpawnTowerFunction then
-            SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(-47.833293914795, 7.5533952713013, -48.112167358398, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(-47.178112030029, 7.553394317627, -87.195510864258, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),  nil)
             task.wait(1)
+            SafeUpgrade("SoulCurse")
+            task.wait(0.1)
             SafeUpgrade("AmplifyingSorcerer")
             task.wait(1)
          end
@@ -339,8 +343,8 @@ task.spawn(function()
                SukunaKiraraPlaced = true
                task.wait(1)
             end
-            SafeUpgrade("StarsSorcerer")
-            task.wait(1)
+            SafeUpgrade("SoulCurse")
+            task.wait(0.1)
          end
 
       end
