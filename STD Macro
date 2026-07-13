@@ -290,7 +290,7 @@ task.spawn(function()
          
          -- TASK 1: MAHITO COMBAT SYSTEMS
          if Rayfield.Flags.SukunaMahito and Rayfield.Flags.SukunaMahito.CurrentValue and SpawnTowerFunction then
-            SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(51.454769134521, 8.5099258422852, -125.18762207031, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new    CFrame.new(-52.153255462646, 7.8088941574097, -50.821315765381, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(1)
             SafeUpgrade("SoulCurse")
             task.wait(1)
