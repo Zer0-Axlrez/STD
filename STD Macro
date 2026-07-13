@@ -39,7 +39,6 @@ local UpgradeTowerFunction = Functions and Functions:WaitForChild("UpgradeTower"
 ------------------------------------------
 local MomoPlaced = false
 local SukunaMomoPlaced = false
-local SukunaKiraraPlaced = false
 
 ------------------------------------------
 -- ADVANCED ASYNCHRONOUS UPGRADE LOGIC
@@ -174,7 +173,7 @@ SukunaTab:CreateToggle({
 })
 
 SukunaTab:CreateToggle({
-   Name = "5. Auto Kirara Hoshi (One Placement)",
+   Name = "5. Auto Kirara Hoshi (Spam Placement)",
    CurrentValue = false,
    Flag = "SukunaKirara",
    Callback = function() end,
@@ -199,7 +198,7 @@ task.spawn(function()
             task.wait(1)
          end
          
-         -- TASK 2: MONEY AGENT SYSTEMS (Mahito structural safety upgrade kept intact)
+         -- TASK 2: MONEY AGENT SYSTEMS
          if Rayfield.Flags.QueueAgents and Rayfield.Flags.QueueAgents.CurrentValue and SpawnTowerFunction then
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(0.1)
@@ -257,7 +256,7 @@ task.spawn(function()
             task.wait(1)
          end
          
-         -- STAGE 10 TASK 2: AGENTS LOOP (Mahito structural safety upgrade kept intact)
+         -- STAGE 10 TASK 2: AGENTS LOOP
          if Rayfield.Flags.Stage10Agents and Rayfield.Flags.Stage10Agents.CurrentValue and SpawnTowerFunction then
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(80.757881164551, 35.875541687012, -117.99294281006, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(0.1)
@@ -290,7 +289,7 @@ task.spawn(function()
          
          -- TASK 1: MAHITO COMBAT SYSTEMS
          if Rayfield.Flags.SukunaMahito and Rayfield.Flags.SukunaMahito.CurrentValue and SpawnTowerFunction then
-            SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(-50.173458099365, 7.8088941574097, -89.774597167969, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),    nil)
+            SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(-50.173458099365, 7.8088941574097, -89.774597167969, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(1)
             SafeUpgrade("SoulCurse")
             task.wait(0.1)
@@ -316,7 +315,7 @@ task.spawn(function()
          -- TASK 3: NISHIMIYA BUFFS (MOMO - Safe 1x placement only)
          if Rayfield.Flags.SukunaMomo and Rayfield.Flags.SukunaMomo.CurrentValue and SpawnTowerFunction then
             if not SukunaMomoPlaced then
-               SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(-52.972927093506, 7.7978940010071, -93.06217956543, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),    nil)
+               SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(-52.972927093506, 7.7978940010071, -93.06217956543, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
                SukunaMomoPlaced = true
                task.wait(1)
             end
@@ -328,7 +327,7 @@ task.spawn(function()
          
          -- TASK 4: LORI BUFFS (UTAHIME)
          if Rayfield.Flags.SukunaUtahime and Rayfield.Flags.SukunaUtahime.CurrentValue and SpawnTowerFunction then
-            SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(-47.178112030029, 7.553394317627, -87.195510864258, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),  nil)
+            SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(-47.178112030029, 7.553394317627, -87.195510864258, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(1)
             SafeUpgrade("SoulCurse")
             task.wait(0.1)
@@ -336,10 +335,10 @@ task.spawn(function()
             task.wait(1)
          end
 
-         -- TASK 5: KIRARA HOSHI (Safe 1x placement only)
+         -- TASK 5: KIRARA HOSHI (Placement restriction removed; now acts as a continuous loop)
          if Rayfield.Flags.SukunaKirara and Rayfield.Flags.SukunaKirara.CurrentValue and SpawnTowerFunction then
-            if not SukunaKiraraPlaced then
             SpawnTowerFunction:InvokeServer("c247b6f3-ed09-43e6-91b3-aa902d157b9a", CFrame.new(60.449802398682, 8.1038942337036, -35.080226898193, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) 
+            task.wait(1)
             SafeUpgrade("SoulCurse")
             task.wait(0.1)
          end
