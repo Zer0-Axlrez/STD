@@ -339,10 +339,7 @@ task.spawn(function()
          -- TASK 5: KIRARA HOSHI (Safe 1x placement only)
          if Rayfield.Flags.SukunaKirara and Rayfield.Flags.SukunaKirara.CurrentValue and SpawnTowerFunction then
             if not SukunaKiraraPlaced then
-               SpawnTowerFunction:InvokeServer("c247b6f3-ed09-43e6-91b3-aa902d157b9a", CFrame.new(60.449802398682, 8.1038942337036, -35.080226898193, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-               SukunaKiraraPlaced = true
-               task.wait(1)
-            end
+            SpawnTowerFunction:InvokeServer("c247b6f3-ed09-43e6-91b3-aa902d157b9a", CFrame.new(60.449802398682, 8.1038942337036, -35.080226898193, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) 
             SafeUpgrade("SoulCurse")
             task.wait(0.1)
          end
