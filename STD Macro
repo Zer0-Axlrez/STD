@@ -1,6 +1,7 @@
+-- Rayfield master source link (Works flawlessly on modern Solara & Mobile)
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
 
-
+-- Create the Window with Configuration Saving Enabled
 local Window = Rayfield:CreateWindow({
    Name = "STD Macro",
    LoadingTitle = "Loading Systems...",
@@ -12,11 +13,16 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
+-- Create the Tabs
 local AutomationTab = Window:CreateTab("Auto Farm", 4483362456)
 local Stage10Tab = Window:CreateTab("STAGE 10(HM)", 4483362456)
+local SukunaTab = Window:CreateTab("Sukuna", 4483362456)
 local ManualTab = Window:CreateTab("Manual Control", 4483362456)
 local SupportTab = Window:CreateTab("Support Units", 4483362456)
 
+------------------------------------------
+-- SERVICE & REMOTE FETCHING
+------------------------------------------
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Remotes = ReplicatedStorage:WaitForChild("Remotes", 5) 
 local AutoSkipEvent = Remotes and Remotes:WaitForChild("AutoSkip", 5) 
@@ -28,8 +34,16 @@ local Functions = ReplicatedStorage:WaitForChild("Functions", 5)
 local SpawnTowerFunction = Functions and Functions:WaitForChild("SpawnNewTower", 5)
 local UpgradeTowerFunction = Functions and Functions:WaitForChild("UpgradeTower", 5)
 
+------------------------------------------
+-- SESSION PLACEMENT TRACKERS
+------------------------------------------
 local MomoPlaced = false
+local SukunaMomoPlaced = false
+local SukunaKiraraPlaced = false
 
+------------------------------------------
+-- ADVANCED ASYNCHRONOUS UPGRADE LOGIC
+------------------------------------------
 local function SafeUpgrade(TargetName)
    if not UpgradeTowerFunction then return end
    
@@ -56,6 +70,9 @@ local function SafeUpgrade(TargetName)
    end
 end
 
+------------------------------------------
+-- TAB 1: MASTER AUTOMATION UI
+------------------------------------------
 AutomationTab:CreateSection("Master Control")
 
 AutomationTab:CreateToggle({
@@ -95,6 +112,9 @@ AutomationTab:CreateToggle({
    Callback = function() end,
 })
 
+------------------------------------------
+-- TAB 2: STAGE 10(HM) AUTOMATION UI
+------------------------------------------
 Stage10Tab:CreateSection("Stage 10 Hard Mode Automation")
 
 Stage10Tab:CreateToggle({
@@ -111,6 +131,58 @@ Stage10Tab:CreateToggle({
    Callback = function() end,
 })
 
+------------------------------------------
+-- TAB 3: SUKUNA AUTOMATION UI
+------------------------------------------
+SukunaTab:CreateSection("Sukuna Master Control")
+
+SukunaTab:CreateToggle({
+   Name = "ENABLE SUKUNA LOOP",
+   CurrentValue = false,
+   Flag = "SukunaMasterLoop",
+   Callback = function() end,
+})
+
+SukunaTab:CreateSection("Sukuna Farm Priority Checklist")
+
+SukunaTab:CreateToggle({
+   Name = "1. Auto Mahito (Priority)",
+   CurrentValue = false,
+   Flag = "SukunaMahito",
+   Callback = function() end,
+})
+
+SukunaTab:CreateToggle({
+   Name = "2. Auto Money Agents (Stacked)",
+   CurrentValue = false,
+   Flag = "SukunaAgents",
+   Callback = function() end,
+})
+
+SukunaTab:CreateToggle({
+   Name = "3. Auto Momo Nishimiya",
+   CurrentValue = false,
+   Flag = "SukunaMomo",
+   Callback = function() end,
+})
+
+SukunaTab:CreateToggle({
+   Name = "4. Auto Utahime Lori",
+   CurrentValue = false,
+   Flag = "SukunaUtahime",
+   Callback = function() end,
+})
+
+SukunaTab:CreateToggle({
+   Name = "5. Auto Kirara Hoshi (One Placement)",
+   CurrentValue = false,
+   Flag = "SukunaKirara",
+   Callback = function() end,
+})
+
+------------------------------------------
+-- LOOP A: ORIGINAL MAP AUTO-FARM LOOP SEQUENCE
+------------------------------------------
 task.spawn(function()
    task.wait(2) 
    
@@ -119,7 +191,7 @@ task.spawn(function()
       
       if Rayfield.Flags and Rayfield.Flags.MasterAutoFarmLoop and Rayfield.Flags.MasterAutoFarmLoop.CurrentValue then
          
-         
+         -- TASK 1: MAHITO COMBAT SYSTEMS
          if Rayfield.Flags.QueueMahito and Rayfield.Flags.QueueMahito.CurrentValue and SpawnTowerFunction then
             SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(51.454769134521, 8.5099258422852, -125.18762207031, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(1)
@@ -127,7 +199,7 @@ task.spawn(function()
             task.wait(1)
          end
          
-         
+         -- TASK 2: MONEY AGENT SYSTEMS (Mahito structural safety upgrade kept intact)
          if Rayfield.Flags.QueueAgents and Rayfield.Flags.QueueAgents.CurrentValue and SpawnTowerFunction then
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(0.1)
@@ -144,7 +216,7 @@ task.spawn(function()
             task.wait(1)
          end
          
-         
+         -- TASK 3: NISHIMIYA BUFFS (MOMO)
          if Rayfield.Flags.QueueMomo and Rayfield.Flags.QueueMomo.CurrentValue and SpawnTowerFunction then
             if not MomoPlaced then
                SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(46.699993133545, 8.498929977417, -124.27536010742, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
@@ -155,7 +227,7 @@ task.spawn(function()
             task.wait(1)
          end
          
-         
+         -- TASK 4: LORI BUFFS (UTAHIME)
          if Rayfield.Flags.QueueUtahime and Rayfield.Flags.QueueUtahime.CurrentValue and SpawnTowerFunction then
             SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(55.824909210205, 8.2544298171997, -124.13116455078, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(1)
@@ -167,6 +239,9 @@ task.spawn(function()
    end
 end)
 
+------------------------------------------
+-- LOOP B: STAGE 10(HM) SPECIFIC AUTO-FARM LOGIC
+------------------------------------------
 task.spawn(function()
    task.wait(2)
    
@@ -174,7 +249,7 @@ task.spawn(function()
       task.wait(1)
       
       if Rayfield.Flags then
-         
+         -- STAGE 10 TASK 1: MAHITO LOOP
          if Rayfield.Flags.Stage10Mahito and Rayfield.Flags.Stage10Mahito.CurrentValue and SpawnTowerFunction then
             SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(66.3603515625, 35.874889373779, -126.4451675415, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(1)
@@ -182,7 +257,7 @@ task.spawn(function()
             task.wait(1)
          end
          
-         
+         -- STAGE 10 TASK 2: AGENTS LOOP (Mahito structural safety upgrade kept intact)
          if Rayfield.Flags.Stage10Agents and Rayfield.Flags.Stage10Agents.CurrentValue and SpawnTowerFunction then
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(80.757881164551, 35.875541687012, -117.99294281006, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(0.1)
@@ -191,7 +266,7 @@ task.spawn(function()
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(79.697959899902, 35.875583648682, -128.37979125977, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(0.1)
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(80.230987548828, 35.875606536865, -133.20204162598, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-            task.wait(0.1)
+            task.wait(0.5)
             SafeUpgrade("SoulCurse")
             task.wait(0.5)
             
@@ -202,6 +277,79 @@ task.spawn(function()
    end
 end)
 
+------------------------------------------
+-- LOOP C: SUKUNA MAP SPECIFIC AUTO-FARM LOOP SEQUENCE
+------------------------------------------
+task.spawn(function()
+   task.wait(2)
+   
+   while true do
+      task.wait(1)
+      
+      if Rayfield.Flags and Rayfield.Flags.SukunaMasterLoop and Rayfield.Flags.SukunaMasterLoop.CurrentValue then
+         
+         -- TASK 1: MAHITO COMBAT SYSTEMS
+         if Rayfield.Flags.SukunaMahito and Rayfield.Flags.SukunaMahito.CurrentValue and SpawnTowerFunction then
+            SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(51.454769134521, 8.5099258422852, -125.18762207031, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(1)
+            SafeUpgrade("SoulCurse")
+            task.wait(1)
+         end
+         
+         -- TASK 2: MONEY AGENT SYSTEMS (Stacking 4 agents on a single CFrame coordinate)
+         if Rayfield.Flags.SukunaAgents and Rayfield.Flags.SukunaAgents.CurrentValue and SpawnTowerFunction then
+            SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(-37.457859039307, 7.809579372406, -74.426826477051, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(0.1)
+            SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(-37.457859039307, 7.809579372406, -74.426826477051, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(0.1)
+            SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(-37.457859039307, 7.809579372406, -74.426826477051, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(0.1)
+            SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(-37.457859039307, 7.809579372406, -74.426826477051, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(0.1)
+            SafeUpgrade("SoulCurse")
+            task.wait(1)
+            
+            SafeUpgrade("SorcererAgent")
+            task.wait(1)
+         end
+         
+         -- TASK 3: NISHIMIYA BUFFS (MOMO - Safe 1x placement only)
+         if Rayfield.Flags.SukunaMomo and Rayfield.Flags.SukunaMomo.CurrentValue and SpawnTowerFunction then
+            if not SukunaMomoPlaced then
+               SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(-50.710391998291, 7.7978930473328, -54.597816467285, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+               SukunaMomoPlaced = true
+               task.wait(1)
+            end
+            SafeUpgrade("BroomSorcerer")
+            task.wait(1)
+         end
+         
+         -- TASK 4: LORI BUFFS (UTAHIME)
+         if Rayfield.Flags.SukunaUtahime and Rayfield.Flags.SukunaUtahime.CurrentValue and SpawnTowerFunction then
+            SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(-47.833293914795, 7.5533952713013, -48.112167358398, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(1)
+            SafeUpgrade("AmplifyingSorcerer")
+            task.wait(1)
+         end
+
+         -- TASK 5: KIRARA HOSHI (Safe 1x placement only)
+         if Rayfield.Flags.SukunaKirara and Rayfield.Flags.SukunaKirara.CurrentValue and SpawnTowerFunction then
+            if not SukunaKiraraPlaced then
+               SpawnTowerFunction:InvokeServer("c247b6f3-ed09-43e6-91b3-aa902d157b9a", CFrame.new(60.449802398682, 8.1038942337036, -35.080226898193, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+               SukunaKiraraPlaced = true
+               task.wait(1)
+            end
+            SafeUpgrade("StarsSorcerer")
+            task.wait(1)
+         end
+
+      end
+   end
+end)
+
+------------------------------------------
+-- THE AUTOMATED PLAY NEXT / REPLAY TASK LOOP (1s Interval)
+------------------------------------------
 task.spawn(function()
    while true do
       task.wait(1) 
@@ -213,6 +361,9 @@ task.spawn(function()
    end
 end)
 
+------------------------------------------
+-- TAB 4: MANUAL CONTROL UI Elements
+------------------------------------------
 ManualTab:CreateSection("Stage Progression Options")
 
 local toggleState = false
@@ -236,7 +387,6 @@ ManualTab:CreateButton({
       AutoSkipToggle:Set(toggleState)
    end,
 })
-
 
 ManualTab:CreateToggle({
    Name = "Auto Play Next / Auto Replay",
@@ -287,6 +437,9 @@ ManualTab:CreateButton({
    Callback = function() SafeUpgrade("SoulCurse") end,
 })
 
+------------------------------------------
+-- TAB 5: SUPPORT UNITS UI ELEMENTS
+------------------------------------------
 SupportTab:CreateSection("Nishimiya Buffs")
 SupportTab:CreateButton({
    Name = "Place Momo Nishimiya",
@@ -340,4 +493,5 @@ SupportTab:CreateButton({
    Callback = function() SafeUpgrade("StarsSorcerer") end,
 })
 
+-- Handle Configuration Loads
 Rayfield:LoadConfiguration()
