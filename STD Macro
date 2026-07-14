@@ -1,7 +1,7 @@
--- Rayfield master source link (Works flawlessly on modern Solara & Mobile)
+
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
 
--- Create the Window with Configuration Saving Enabled
+
 local Window = Rayfield:CreateWindow({
    Name = "STD Macro",
    LoadingTitle = "Loading Systems...",
@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
--- Create the Tabs
+
 local AutomationTab = Window:CreateTab("Auto Farm", 4483362456)
 local Stage10Tab = Window:CreateTab("STAGE 10(HM)", 4483362456)
 local SukunaTab = Window:CreateTab("Sukuna", 4483362456)
@@ -75,9 +75,16 @@ end
 AutomationTab:CreateSection("Master Control")
 
 AutomationTab:CreateToggle({
-   Name = "ENABLE AUTO FARM LOOP",
+   Name = "ENABLE AUTO FARM LOOP (Custom Choices)",
    CurrentValue = false,
    Flag = "MasterAutoFarmLoop",
+   Callback = function() end,
+})
+
+AutomationTab:CreateToggle({
+   Name = "ONE-CLICK AUTO FARM (All-in-One)",
+   CurrentValue = false,
+   Flag = "AllInOneAutoFarm",
    Callback = function() end,
 })
 
@@ -136,9 +143,16 @@ Stage10Tab:CreateToggle({
 SukunaTab:CreateSection("Sukuna Master Control")
 
 SukunaTab:CreateToggle({
-   Name = "ENABLE SUKUNA LOOP",
+   Name = "ENABLE SUKUNA LOOP (Custom Choices)",
    CurrentValue = false,
    Flag = "SukunaMasterLoop",
+   Callback = function() end,
+})
+
+SukunaTab:CreateToggle({
+   Name = "ONE-CLICK SUKUNA FARM (All-in-One)",
+   CurrentValue = false,
+   Flag = "AllInOneSukuna",
    Callback = function() end,
 })
 
@@ -180,7 +194,59 @@ SukunaTab:CreateToggle({
 })
 
 ------------------------------------------
--- LOOP A: ORIGINAL MAP AUTO-FARM LOOP SEQUENCE
+-- LOOP A-1: ORIGINAL MAP ALL-IN-ONE SYSTEM
+------------------------------------------
+task.spawn(function()
+   task.wait(2)
+   while true do
+      task.wait(1)
+      if Rayfield.Flags and Rayfield.Flags.AllInOneAutoFarm and Rayfield.Flags.AllInOneAutoFarm.CurrentValue and SpawnTowerFunction then
+         -- 1. Auto Mahito
+         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(51.454769134521, 8.5099258422852, -125.18762207031, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SafeUpgrade("SoulCurse")
+         task.wait(0.1)
+
+         -- 2. Auto Money Agents
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(46.969585418701, 8.510612487793, -145.1955871582, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(41.046390533447, 8.5106134414673, -145.1208190918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(51.454769134521, 8.5099258422852, -125.18762207031, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SafeUpgrade("SoulCurse")
+         task.wait(0.1)
+         SafeUpgrade("SorcererAgent")
+         task.wait(0.1)
+
+         -- 3. Auto Momo
+         if not MomoPlaced then
+            SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(46.699993133545, 8.498929977417, -124.27536010742, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            MomoPlaced = true
+            task.wait(0.1)
+         end
+         SafeUpgrade("SoulCurse")
+         task.wait(0.1)
+         SafeUpgrade("BroomSorcerer")
+         task.wait(0.1)
+
+         -- 4. Auto Utahime
+         SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(55.824909210205, 8.2544298171997, -124.13116455078, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SafeUpgrade("SoulCurse")
+         task.wait(0.1)
+         SafeUpgrade("AmplifyingSorcerer")
+         task.wait(0.1)
+      end
+   end
+end)
+
+------------------------------------------
+-- LOOP A-2: ORIGINAL MAP AUTO-FARM LOOP SEQUENCE (Custom checklist)
 ------------------------------------------
 task.spawn(function()
    task.wait(2) 
@@ -277,7 +343,65 @@ task.spawn(function()
 end)
 
 ------------------------------------------
--- LOOP C: SUKUNA MAP SPECIFIC AUTO-FARM LOOP SEQUENCE
+-- LOOP C-1: SUKUNA MAP ALL-IN-ONE SYSTEM
+------------------------------------------
+task.spawn(function()
+   task.wait(2)
+   while true do
+      task.wait(1)
+      if Rayfield.Flags and Rayfield.Flags.AllInOneSukuna and Rayfield.Flags.AllInOneSukuna.CurrentValue and SpawnTowerFunction then
+         -- 1. Auto Mahito
+         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(-50.173458099365, 7.8088941574097, -89.774597167969, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SafeUpgrade("SoulCurse")
+         task.wait(0.1)
+
+         -- 2. Auto Money Agents
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(-37.457859039307, 7.809579372406, -74.426826477051, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(-37.457859039307, 7.809579372406, -74.426826477051, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(-37.457859039307, 7.809579372406, -74.426826477051, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(-37.457859039307, 7.809579372406, -74.426826477051, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(-50.173458099365, 7.8088941574097, -89.774597167969, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SafeUpgrade("SoulCurse")
+         task.wait(0.1)
+         SafeUpgrade("SorcererAgent")
+         task.wait(0.1)
+
+         -- 3. Auto Momo
+         if not SukunaMomoPlaced then
+            SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(-52.972927093506, 7.7978940010071, -93.06217956543, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            SukunaMomoPlaced = true
+            task.wait(0.5)
+         end
+         SafeUpgrade("SoulCurse")
+         task.wait(0.1)
+         SafeUpgrade("BroomSorcerer")
+         task.wait(0.5)
+
+         -- 4. Auto Utahime
+         SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(-47.178112030029, 7.553394317627, -87.195510864258, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.5)
+         SafeUpgrade("SoulCurse")
+         task.wait(0.1)
+         SafeUpgrade("AmplifyingSorcerer")
+         task.wait(0.5)
+
+         -- 5. Auto Kirara
+         SpawnTowerFunction:InvokeServer("c247b6f3-ed09-43e6-91b3-aa902d157b9a", CFrame.new(60.449802398682, 8.1038942337036, -35.080226898193, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) 
+         task.wait(0.5)
+         SafeUpgrade("SoulCurse")
+         task.wait(0.1)
+      end
+   end
+end)
+
+------------------------------------------
+-- LOOP C-2: SUKUNA MAP AUTO-FARM LOOP SEQUENCE (Custom checklist)
 ------------------------------------------
 task.spawn(function()
    task.wait(2)
@@ -295,7 +419,7 @@ task.spawn(function()
             task.wait(0.1)
          end
          
-         -- TASK 2: MONEY AGENT SYSTEMS (Stacking 4 agents on a single CFrame coordinate)
+         -- TASK 2: MONEY AGENT SYSTEMS
          if Rayfield.Flags.SukunaAgents and Rayfield.Flags.SukunaAgents.CurrentValue and SpawnTowerFunction then
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(-37.457859039307, 7.809579372406, -74.426826477051, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(0.1)
@@ -312,7 +436,7 @@ task.spawn(function()
             task.wait(1)
          end
          
-         -- TASK 3: NISHIMIYA BUFFS (MOMO - Safe 1x placement only)
+         -- TASK 3: NISHIMIYA BUFFS (MOMO)
          if Rayfield.Flags.SukunaMomo and Rayfield.Flags.SukunaMomo.CurrentValue and SpawnTowerFunction then
             if not SukunaMomoPlaced then
                SpawnTowerFunction:InvokeServer("d343fc20-dc32-4e08-90eb-de8e3f9076ac", CFrame.new(-52.972927093506, 7.7978940010071, -93.06217956543, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
@@ -335,7 +459,7 @@ task.spawn(function()
             task.wait(1)
          end
 
-         -- TASK 5: KIRARA HOSHI (Placement restriction removed; now acts as a continuous loop)
+         -- TASK 5: KIRARA HOSHI
          if Rayfield.Flags.SukunaKirara and Rayfield.Flags.SukunaKirara.CurrentValue and SpawnTowerFunction then
             SpawnTowerFunction:InvokeServer("c247b6f3-ed09-43e6-91b3-aa902d157b9a", CFrame.new(60.449802398682, 8.1038942337036, -35.080226898193, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) 
             task.wait(1)
