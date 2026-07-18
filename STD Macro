@@ -100,7 +100,7 @@ task.spawn(function()
             CFrame.new(37.094375610352, 8.5099258422852, -165.89813232422, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),
             nil
          )
-         task.wait(0.1)
+         task.wait(0.5)
          
          -- 2. Place Money Agents
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
@@ -114,7 +114,7 @@ task.spawn(function()
          
          -- 3. Upgrade Money Agents
          AdvancedUpgrade("SorcererAgent")
-         task.wait(0.1)
+         task.wait(0.5)
          
          -- 4. Place Sukuna
          SpawnTowerFunction:InvokeServer(
@@ -150,15 +150,15 @@ task.spawn(function()
          
          -- Main Priority Upgrade Sequence: Toji -> Sukuna -> Gojo -> Mahito -> Megumi
          AdvancedUpgrade("SorcererKiller")
-         task.wait(0.1)
+         task.wait(0.5)
          AdvancedUpgrade("KingOfCurses")
-         task.wait(0.1)
+         task.wait(0.5)
          AdvancedUpgrade("StrongestSorcerer")
-         task.wait(0.1)
+         task.wait(0.5)
          AdvancedUpgrade("SoulCurse")
-         task.wait(0.1)
+         task.wait(0.5)
          AdvancedUpgrade("ShadowSorcerer")
-         task.wait(0.1)
+         task.wait(0.5)
       end
    end
 end)
