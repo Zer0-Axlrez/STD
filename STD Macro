@@ -1,9 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "STD Macro - Main Farm",
-   LoadingTitle = "Loading Systems...",
-   LoadingSubtitle = "Automating...",
+   Name = "STD Macro - Unified Version Control",
+   LoadingTitle = "Initializing Tactical Systems...",
+   LoadingSubtitle = "Configuring Farm Arrays...",
    ConfigurationSaving = { 
       Enabled = true,
       FolderName = "SorcererMacroConfigs",
@@ -11,17 +11,22 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
--- UI Tabs (With your old farm safely archived)
-local NewFarmTab = Window:CreateTab("New-Farm", 4483362456)
-local OldFarmTab = Window:CreateTab("Old-Farm", 4483362456)
+-- UI Tab Hierarchy
+local MainFarmTab = Window:CreateTab("Main Farm", 4483362456)
 local Stage10Tab = Window:CreateTab("STAGE 10(HM)", 4483362456)
 local ManualTab = Window:CreateTab("Manual Control", 4483362456)
 local SupportTab = Window:CreateTab("Support Units", 4483362456)
 
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
 local Remotes = ReplicatedStorage:WaitForChild("Remotes", 5) 
 local AutoSkipEvent = Remotes and Remotes:WaitForChild("AutoSkip", 5) 
+
+-- Evolved Toji Ability Configuration
+local TojiEvoRemote = Remotes and Remotes:WaitForChild("Towers", 5) 
+    and Remotes.Towers:WaitForChild("TojiEvo", 5) 
+    and Remotes.Towers.TojiEvo:WaitForChild("TojiWeapon", 5)
 
 local Events = ReplicatedStorage:WaitForChild("Events", 5)
 local ReplayEvent = Events and Events:WaitForChild("Replay", 5)
@@ -29,7 +34,6 @@ local ReplayEvent = Events and Events:WaitForChild("Replay", 5)
 local Functions = ReplicatedStorage:WaitForChild("Functions", 5)
 local SpawnTowerFunction = Functions and Functions:WaitForChild("SpawnNewTower", 5)
 local UpgradeTowerFunction = Functions and Functions:WaitForChild("UpgradeTower", 5)
-
 
 local Guitar1Placed = false
 local Guitar2Placed = false
@@ -39,10 +43,7 @@ local UtahimePlaced = false
 local function AdvancedUpgrade(TargetName)
    if not UpgradeTowerFunction then return end
    
-   -- 1. Check Standard Workspace Folders
-   local Workspace = game:GetService("Workspace")
    local folders = {Workspace:FindFirstChild("Towers"), Workspace:FindFirstChild("PlacedTowers"), Workspace:FindFirstChild("Units"), Workspace}
-   
    for _, folder in pairs(folders) do
       if folder then
          for _, Object in pairs(folder:GetChildren()) do
@@ -56,7 +57,6 @@ local function AdvancedUpgrade(TargetName)
       end
    end
    
-   -- 2. Fallback to Nil Memory
    if getnilinstances then
       for _, Object in pairs(getnilinstances()) do
          if Object and Object.Name and string.find(string.lower(Object.Name), string.lower(TargetName)) then
@@ -69,40 +69,71 @@ local function AdvancedUpgrade(TargetName)
    end
 end
 
+local function SetEvojiWeapon(WeaponType)
+   if not TojiEvoRemote then return end
+   
+   local folders = {Workspace:FindFirstChild("Towers"), Workspace:FindFirstChild("PlacedTowers"), Workspace:FindFirstChild("Units"), Workspace}
+   for _, folder in pairs(folders) do
+      if folder then
+         for _, Object in pairs(folder:GetChildren()) do
+            if Object and Object.Name and string.find(string.lower(Object.Name), "sorcererkillerevo") then
+               task.spawn(function()
+                  TojiEvoRemote:FireServer(Object, WeaponType)
+               end)
+            end
+         end
+      end
+   end
+end
 
-NewFarmTab:CreateSection("Master Control")
-NewFarmTab:CreateToggle({
-   Name = "ENABLE NEW FARM LOOP",
+MainFarmTab:CreateSection("V3 Farm Framework (Newest)")
+MainFarmTab:CreateToggle({
+   Name = "ENABLE V3 FARM LOOP",
    CurrentValue = false,
-   Flag = "NewAutoFarmLoop",
+   Flag = "V3FarmLoop",
    Callback = function() end,
 })
 
-NewFarmTab:CreateSection("Global Settings")
-NewFarmTab:CreateToggle({
+MainFarmTab:CreateSection("V2 Farm Framework (Newer)")
+MainFarmTab:CreateToggle({
+   Name = "ENABLE V2 FARM LOOP",
+   CurrentValue = false,
+   Flag = "V2FarmLoop",
+   Callback = function() end,
+})
+
+MainFarmTab:CreateSection("V1 Farm Framework (Oldest)")
+MainFarmTab:CreateToggle({
+   Name = "ENABLE V1 FARM LOOP",
+   CurrentValue = false,
+   Flag = "V1FarmLoop",
+   Callback = function() end,
+})
+
+MainFarmTab:CreateSection("Global Stage Handlers")
+MainFarmTab:CreateToggle({
    Name = "Auto Play Next / Auto Replay",
    CurrentValue = false,
    Flag = "AutoPlayNextFlag",
    Callback = function() end,
 })
 
-
 task.spawn(function()
    task.wait(2)
    while true do
-      task.wait(0.1) -- Cooldown is 0.1s as requested
+      task.wait(1.0) -- Main global cycle speed
       
-      if Rayfield.Flags and Rayfield.Flags.NewAutoFarmLoop and Rayfield.Flags.NewAutoFarmLoop.CurrentValue and SpawnTowerFunction then
+      if Rayfield.Flags and Rayfield.Flags.V3FarmLoop and Rayfield.Flags.V3FarmLoop.CurrentValue and SpawnTowerFunction then
          
-         -- 1. Place Megumi
+         -- 1. Base Toji Placement (Old Mahito Placement Location)
          SpawnTowerFunction:InvokeServer(
-            "ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f",
-            CFrame.new(37.094375610352, 8.5099258422852, -165.89813232422, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),
+            "295b7432-fe4b-4d9f-bb01-a4a5463318e7",
+            CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),
             nil
          )
-         task.wait(0.5)
+         task.wait(0.5) -- Placement Cooldown
          
-         -- 2. Place Money Agents
+         -- 2. Money Agent Placements
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.1)
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
@@ -112,71 +143,82 @@ task.spawn(function()
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(41.046390533447, 8.5106134414673, -145.1208190918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.1)
          
-         -- 3. Upgrade Money Agents
+         -- 3. Money Agent Upgrades
          AdvancedUpgrade("SorcererAgent")
-         task.wait(0.5)
-         
-         -- 4. Place Sukuna
-         SpawnTowerFunction:InvokeServer(
-            "9652f4cd-1993-475a-a232-c6e8f47d7a18",
-            CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),
-            nil
-         )
          task.wait(0.1)
          
-         -- 5. Place Gojo
-         SpawnTowerFunction:InvokeServer(
-            "729ac814-fab1-4814-bddf-53618f5c248d",
-            CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),
-            nil
-         )
+         -- 4. Main Stack Placements (Sukuna, Gojo, Evoji)
+         SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("729ac814-fab1-4814-bddf-53618f5c248d", CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("9670732c-4393-4a60-aa25-4feb0db974ef", CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.1)
          
-         -- 6. Place Mahito
-         SpawnTowerFunction:InvokeServer(
-            "6a571a05-5703-40c9-8e17-18a51cb2b3c8",
-            CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),
-            nil
-         )
+         -- 5. Targeted Upgrade Processing Sequence
+         AdvancedUpgrade("SorcererAgent")
          task.wait(0.1)
-         
-         -- 7. Place Toji (Stacked with Gojo)
-         SpawnTowerFunction:InvokeServer(
-            "295b7432-fe4b-4d9f-bb01-a4a5463318e7",
-            CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),
-            nil
-         )
+         AdvancedUpgrade("SorcererKillerEvo")
          task.wait(0.1)
-         
-         -- Main Priority Upgrade Sequence: Toji -> Sukuna -> Gojo -> Mahito -> Megumi
          AdvancedUpgrade("SorcererKiller")
-         task.wait(0.5)
+         task.wait(0.1)
          AdvancedUpgrade("KingOfCurses")
-         task.wait(0.5)
+         task.wait(0.1)
          AdvancedUpgrade("StrongestSorcerer")
-         task.wait(0.5)
-         AdvancedUpgrade("SoulCurse")
-         task.wait(0.5)
-         AdvancedUpgrade("ShadowSorcerer")
-         task.wait(0.5)
+         task.wait(0.1)
+         
+         -- 6. Weapon Assignment Sequence Execution
+         SetEvojiWeapon("Sword")
       end
    end
 end)
 
-
-OldFarmTab:CreateSection("Archived 9-Step Loop")
-OldFarmTab:CreateToggle({
-   Name = "ENABLE OLD FARM LOOP",
-   CurrentValue = false,
-   Flag = "OldAutoFarmLoop",
-   Callback = function() end,
-})
+task.spawn(function()
+   task.wait(2)
+   while true do
+      task.wait(0.1)
+      
+      if Rayfield.Flags and Rayfield.Flags.V2FarmLoop and Rayfield.Flags.V2FarmLoop.CurrentValue and SpawnTowerFunction then
+         SpawnTowerFunction:InvokeServer("ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", CFrame.new(37.094375610352, 8.5099258422852, -165.89813232422, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(46.969585418701, 8.510612487793, -145.1955871582, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(41.046390533447, 8.5106134414673, -145.1208190918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         
+         AdvancedUpgrade("SorcererAgent")
+         task.wait(0.1)
+         
+         SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("729ac814-fab1-4814-bddf-53618f5c248d", CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("295b7432-fe4b-4d9f-bb01-a4a5463318e7", CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         
+         AdvancedUpgrade("SorcererKiller")
+         task.wait(0.1)
+         AdvancedUpgrade("KingOfCurses")
+         task.wait(0.1)
+         AdvancedUpgrade("StrongestSorcerer")
+         task.wait(0.1)
+         AdvancedUpgrade("SoulCurse")
+         task.wait(0.1)
+         AdvancedUpgrade("ShadowSorcerer")
+         task.wait(0.1)
+      end
+   end
+end)
 
 task.spawn(function()
    task.wait(2) 
    while true do
-      task.wait(1) 
-      if Rayfield.Flags and Rayfield.Flags.OldAutoFarmLoop and Rayfield.Flags.OldAutoFarmLoop.CurrentValue and SpawnTowerFunction then
+      task.wait(1.0) 
+      if Rayfield.Flags and Rayfield.Flags.V1FarmLoop and Rayfield.Flags.V1FarmLoop.CurrentValue and SpawnTowerFunction then
          -- Step 1
          SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.2) AdvancedUpgrade("KingOfCurses") task.wait(0.2)
@@ -229,15 +271,14 @@ task.spawn(function()
    end
 end)
 
-
 task.spawn(function()
    task.wait(2)
    while true do
-      task.wait(1)
+      task.wait(1.0)
       if Rayfield.Flags then
          if Rayfield.Flags.Stage10Mahito and Rayfield.Flags.Stage10Mahito.CurrentValue and SpawnTowerFunction then
             SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(66.3603515625, 35.874889373779, -126.4451675415, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-            task.wait(1) AdvancedUpgrade("SoulCurse") task.wait(1)
+            task.wait(1.0) AdvancedUpgrade("SoulCurse") task.wait(1.0)
          end
          
          if Rayfield.Flags.Stage10Agents and Rayfield.Flags.Stage10Agents.CurrentValue and SpawnTowerFunction then
@@ -246,7 +287,7 @@ task.spawn(function()
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(79.697959899902, 35.875583648682, -128.37979125977, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
             SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(80.230987548828, 35.875606536865, -133.20204162598, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
             task.wait(0.5) AdvancedUpgrade("SoulCurse") task.wait(0.5)
-            AdvancedUpgrade("SorcererAgent") task.wait(1)
+            AdvancedUpgrade("SorcererAgent") task.wait(1.0)
          end
       end
    end
@@ -266,10 +307,9 @@ Stage10Tab:CreateToggle({
    Callback = function() end,
 })
 
-
 task.spawn(function()
    while true do
-      task.wait(1) 
+      task.wait(1.0) 
       if Rayfield.Flags and Rayfield.Flags.AutoPlayNextFlag and Rayfield.Flags.AutoPlayNextFlag.CurrentValue then
          if ReplayEvent then ReplayEvent:FireServer() end
       end
@@ -315,7 +355,7 @@ ManualTab:CreateButton({ Name = "Upgrade Money Agent to T2", Interact = "Click",
 
 ManualTab:CreateSection("Mahito Combat Systems")
 ManualTab:CreateButton({
-   Name = "Place Mahito (New Coordinate)",
+   Name = "Place Mahito (V1 Coordinate)",
    Interact = "Click",
    Callback = function()
       if SpawnTowerFunction then
@@ -324,7 +364,6 @@ ManualTab:CreateButton({
    end,
 })
 ManualTab:CreateButton({ Name = "Upgrade Mahito", Interact = "Click", Callback = function() AdvancedUpgrade("SoulCurse") end })
-
 
 SupportTab:CreateSection("Guitar Sorcerer Buffs")
 SupportTab:CreateButton({
