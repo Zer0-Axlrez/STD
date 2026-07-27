@@ -4,6 +4,7 @@ local Window = Rayfield:CreateWindow({
    Name = "STD Macro - Unified Version Control",
    LoadingTitle = "Initializing Tactical Systems...",
    LoadingSubtitle = "Configuring Farm Arrays...",
+   DisableRayfieldPrompts = true,
    ConfigurationSaving = { 
       Enabled = true,
       FolderName = "SorcererMacroConfigs",
