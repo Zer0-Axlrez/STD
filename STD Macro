@@ -1,30 +1,30 @@
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "STD Macro - Unified Version Control",
-   LoadingTitle = "Initializing Tactical Systems...",
-   LoadingSubtitle = "Configuring Farm Arrays...",
+   Name = "STD Macro",
+   LoadingTitle = "Initializing Tactical Niggafied Systems...",
+   LoadingSubtitle = "Configuring Useful Slave Status...",
    DisableRayfieldPrompts = true,
    DisableIntro = true, 
    ConfigurationSaving = { 
       Enabled = true,
       FolderName = "SorcererMacroConfigs",
-      FileName = "FarmSettings"
+      FileName = "CustomFarmProfiles"
    }
 })
 
-local MainFarmTab = Window:CreateTab("Main Farm", 4483362456)
+-- Generate Script Interface Layout Tabs
+local MainFarmTab = Window:CreateTab("Main Farms", 4483362456)
 local ManualTab = Window:CreateTab("Manual Control", 4483362456)
-local SupportTab = Window:CreateTab("Support Units", 4483362456)
+local Farm1Tab = Window:CreateTab("Farm 1", 4483362456)
+local CustomTab2 = Window:CreateTab("Farm 2", 4483362456)
+local CustomTab3 = Window:CreateTab("Farm 3", 4483362456)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
 
 local Remotes = ReplicatedStorage:WaitForChild("Remotes", 5) 
 local AutoSkipEvent = Remotes and Remotes:WaitForChild("AutoSkip", 5) 
@@ -40,150 +40,95 @@ local Functions = ReplicatedStorage:WaitForChild("Functions", 5)
 local SpawnTowerFunction = Functions and Functions:WaitForChild("SpawnNewTower", 5)
 local UpgradeTowerFunction = Functions and Functions:WaitForChild("UpgradeTower", 5)
 
-local Guitar1Placed = false
-local Guitar2Placed = false
-local UtahimePlaced = false
+-- Global Database of Known Core Identifiers (Corrected & Deduped)
+local UnitDatabase = {
+    ["Sorcerer Agent"] = {ID = "da43ddf4-e433-4c63-85db-00c3baead3ba", Remote = "SorcererAgent"},
+    ["Toji (Base)"]    = {ID = "295b7432-fe4b-4d9f-bb01-a4a5463318e7", Remote = "SorcererKiller"},
+    ["Toji Evo"]       = {ID = "9670732c-4393-4a60-aa25-4feb0db974ef", Remote = "SorcererKillerEvo"},
+    ["Gojo"]           = {ID = "729ac814-fab1-4814-bddf-53618f5c248d", Remote = "StrongestSorcerer"},
+    ["Sukuna"]         = {ID = "9652f4cd-1993-475a-a232-c6e8f47d7a18", Remote = "KingOfCurses"},
+    ["Megumi"]         = {ID = "ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", Remote = "ShadowSorcerer"},
+    ["Mahito"]         = {ID = "6a571a05-5703-40c9-8e17-18a51cb2b3c8", Remote = "SoulCurse"},
+    ["Utahime"]        = {ID = "e95c062a-ccad-41d6-9086-738583900917", Remote = "AmplifyingSorcerer"},
+    ["Guitar Sorcerer"]= {ID = "a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", Remote = "GuitarSorcerer"},
+    ["Momo"]           = {ID = "d343fc20-dc32-4e08-90eb-de8e3f9076ac", Remote = "BroomSorcerer"},
+    ["Kirara"]         = {ID = "c247b6f3-ed09-43e6-91b3-aa902d157b9a", Remote = "StarSorcerer"}
+}
 
-local PlacerActive = false
-local SelectedTowerID = "da43ddf4-e433-4c63-85db-00c3baead3ba" 
-local PreviewPart = nil
+local function GetDropdownKeys()
+    local keys = {"Custom ID Input"}
+    for name, _ in pairs(UnitDatabase) do
+        table.insert(keys, name)
+    end
+    table.sort(keys)
+    return keys
+end
 
 local function AdvancedUpgrade(TargetName)
    if not UpgradeTowerFunction then return end
-   
    local folders = {Workspace:FindFirstChild("Towers"), Workspace:FindFirstChild("PlacedTowers"), Workspace:FindFirstChild("Units"), Workspace}
    for _, folder in pairs(folders) do
       if folder then
          for _, Object in pairs(folder:GetChildren()) do
             if Object and Object.Name and string.find(string.lower(Object.Name), string.lower(TargetName)) then
-               task.spawn(function()
-                  UpgradeTowerFunction:InvokeServer(Object)
-               end)
+               task.spawn(function() UpgradeTowerFunction:InvokeServer(Object) end)
                task.wait(0.01)
             end
          end
       end
    end
-   
-   if getnilinstances then
-      for _, Object in pairs(getnilinstances()) do
-         if Object and Object.Name and string.find(string.lower(Object.Name), string.lower(TargetName)) then
-            task.spawn(function()
-               UpgradeTowerFunction:InvokeServer(Object)
-            end)
-            task.wait(0.01)
-         end
-      end
-   end
 end
 
-local function SetEvojiWeapon(WeaponType)
-   if not TojiEvoRemote then return end
-   
-   local folders = {Workspace:FindFirstChild("Towers"), Workspace:FindFirstChild("PlacedTowers"), Workspace:FindFirstChild("Units"), Workspace}
-   for _, folder in pairs(folders) do
-      if folder then
-         for _, Object in pairs(folder:GetChildren()) do
-            if Object and Object.Name and string.find(string.lower(Object.Name), "sorcererkillerevo") then
-               task.spawn(function()
-                  TojiEvoRemote:FireServer(Object, WeaponType)
-               end)
-            end
-         end
-      end
-   end
-end
+-- ==================== MAIN FARM TAB ====================
+MainFarmTab:CreateSection("Preconfigured Farm Loops")
+MainFarmTab:CreateToggle({ Name = "ENABLE V3 FARM LOOP", CurrentValue = false, Flag = "V3FarmLoop", Callback = function() end })
+MainFarmTab:CreateToggle({ Name = "ENABLE V2 FARM LOOP", CurrentValue = false, Flag = "V2FarmLoop", Callback = function() end })
+MainFarmTab:CreateToggle({ Name = "ENABLE V1 FARM LOOP", CurrentValue = false, Flag = "V1FarmLoop", Callback = function() end })
 
-MainFarmTab:CreateSection("V3 Farm Framework (Newest)")
-MainFarmTab:CreateToggle({
-   Name = "ENABLE V3 FARM LOOP",
-   CurrentValue = false,
-   Flag = "V3FarmLoop",
-   Callback = function() end,
-})
-
-MainFarmTab:CreateSection("V2 Farm Framework (Newer)")
-MainFarmTab:CreateToggle({
-   Name = "ENABLE V2 FARM LOOP",
-   CurrentValue = false,
-   Flag = "V2FarmLoop",
-   Callback = function() end,
-})
-
-MainFarmTab:CreateSection("V1 Farm Framework (Oldest)")
-MainFarmTab:CreateToggle({
-   Name = "ENABLE V1 FARM LOOP",
-   CurrentValue = false,
-   Flag = "V1FarmLoop",
-   Callback = function() end,
-})
-
-MainFarmTab:CreateSection("Global Stage Handlers")
-MainFarmTab:CreateToggle({
-   Name = "Auto Play Next / Auto Replay",
-   CurrentValue = false,
-   Flag = "AutoPlayNextFlag",
-   Callback = function() end,
-})
-
+-- Execution engine for V3 Farm Loop
 task.spawn(function()
-   task.wait(2)
    while true do
       task.wait(1.0)
-      
       if Rayfield.Flags and Rayfield.Flags.V3FarmLoop and Rayfield.Flags.V3FarmLoop.CurrentValue and SpawnTowerFunction then
          SpawnTowerFunction:InvokeServer("295b7432-fe4b-4d9f-bb01-a4a5463318e7", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.5)
-         
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(46.969585418701, 8.510612487793, -145.1955871582, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(41.046390533447, 8.5106134414673, -145.1208190918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.1)
-         
-         AdvancedUpgrade("SorcererAgent")
-         task.wait(0.1)
-         
+         AdvancedUpgrade("SorcererAgent") task.wait(0.1)
          SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("729ac814-fab1-4814-bddf-53618f5c248d", CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("9670732c-4393-4a60-aa25-4feb0db974ef", CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.1)
-         
          AdvancedUpgrade("SorcererAgent") task.wait(0.1)
          AdvancedUpgrade("SorcererKillerEvo") task.wait(0.1)
          AdvancedUpgrade("SorcererKiller") task.wait(0.1)
          AdvancedUpgrade("KingOfCurses") task.wait(0.1)
          AdvancedUpgrade("StrongestSorcerer") task.wait(0.1)
-         
-         SetEvojiWeapon("Sword")
+         if TojiEvoRemote then TojiEvoRemote:FireServer(Workspace, "Sword") end
       end
    end
 end)
 
+-- Execution engine for V2 Farm Loop
 task.spawn(function()
-   task.wait(2)
    while true do
       task.wait(0.1)
-      
       if Rayfield.Flags and Rayfield.Flags.V2FarmLoop and Rayfield.Flags.V2FarmLoop.CurrentValue and SpawnTowerFunction then
-         SpawnTowerFunction:InvokeServer("ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", CFrame.new(37.094375610352, 8.5099258422852, -165.89813232422, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-         task.wait(0.1)
-         
+         SpawnTowerFunction:InvokeServer("ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", CFrame.new(37.094375610352, 8.5099258422852, -165.89813232422, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(46.969585418701, 8.510612487793, -145.1955871582, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(41.046390533447, 8.5106134414673, -145.1208190918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.1)
-         
-         AdvancedUpgrade("SorcererAgent")
-         task.wait(0.1)
-         
+         AdvancedUpgrade("SorcererAgent") task.wait(0.1)
          SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("729ac814-fab1-4814-bddf-53618f5c248d", CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
          SpawnTowerFunction:InvokeServer("295b7432-fe4b-4d9f-bb01-a4a5463318e7", CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.1)
-         
          AdvancedUpgrade("SorcererKiller") task.wait(0.1)
          AdvancedUpgrade("KingOfCurses") task.wait(0.1)
          AdvancedUpgrade("StrongestSorcerer") task.wait(0.1)
@@ -193,228 +138,364 @@ task.spawn(function()
    end
 end)
 
+-- Execution engine for V1 Farm Loop
 task.spawn(function()
-   task.wait(2) 
    while true do
       task.wait(1.0) 
       if Rayfield.Flags and Rayfield.Flags.V1FarmLoop and Rayfield.Flags.V1FarmLoop.CurrentValue and SpawnTowerFunction then
-         SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-         task.wait(0.2) AdvancedUpgrade("KingOfCurses") task.wait(0.2)
-         
-         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-         task.wait(0.2) AdvancedUpgrade("SoulCurse") task.wait(0.2)
-         
-         SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-         task.wait(0.2) AdvancedUpgrade("KingOfCurses") task.wait(0.2)
-         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-         task.wait(0.2) AdvancedUpgrade("SoulCurse") task.wait(0.2)
-         
+         SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.4)
+         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.4)
+         AdvancedUpgrade("KingOfCurses") task.wait(0.1) AdvancedUpgrade("SoulCurse") task.wait(0.1)
          SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
-         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
-         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(46.969585418701, 8.510612487793, -145.1955871582, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
-         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(41.046390533447, 8.5106134414673, -145.1208190918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-         task.wait(0.2) AdvancedUpgrade("SorcererAgent") task.wait(0.2)
-         
-         if not UtahimePlaced then
-            SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(47.922870635986, 8.2544260025024, -154.39346313477, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-            UtahimePlaced = true task.wait(0.2)
-         end
-         AdvancedUpgrade("AmplifyingSorcerer") task.wait(0.2)
-         
-         SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-         task.wait(0.2) AdvancedUpgrade("KingOfCurses") task.wait(0.2)
-         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-         task.wait(0.2) AdvancedUpgrade("SoulCurse") task.wait(0.2)
-         
-         if not Guitar1Placed then
-            SpawnTowerFunction:InvokeServer("a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", CFrame.new(46.299499511719, 8.5099258422852, -162.10559082031, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-            Guitar1Placed = true task.wait(0.2)
-         end
-         if not Guitar2Placed then
-            SpawnTowerFunction:InvokeServer("a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", CFrame.new(34.063499450684, 8.5099277496338, -148.23095703125, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-            Guitar2Placed = true task.wait(0.2)
-         end
-         AdvancedUpgrade("GuitarSorcerer") task.wait(0.2)
-         
-         SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-         task.wait(0.2) AdvancedUpgrade("KingOfCurses") task.wait(0.2)
-         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-         task.wait(0.2) AdvancedUpgrade("SoulCurse") task.wait(0.2)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.2)
+         AdvancedUpgrade("SorcererAgent")
       end
    end
 end)
+
+-- ==================== MANUAL TAB ====================
+ManualTab:CreateSection("Automation Services")
+ManualTab:CreateToggle({
+   Name = "Auto Skip Waves",
+   CurrentValue = false,
+   Flag = "ManualSkipFlag",
+   Callback = function(Val)
+      if AutoSkipEvent then AutoSkipEvent:FireServer() end
+   end
+})
+
+ManualTab:CreateToggle({
+   Name = "Auto Replay Stage",
+   CurrentValue = false,
+   Flag = "ManualReplayFlag",
+   Callback = function() end
+})
 
 task.spawn(function()
    while true do
-      task.wait(1.0) 
-      if Rayfield.Flags and Rayfield.Flags.AutoPlayNextFlag and Rayfield.Flags.AutoPlayNextFlag.CurrentValue then
-         if ReplayEvent then ReplayEvent:FireServer() end
+      task.wait(1.0)
+      if Rayfield.Flags and Rayfield.Flags.ManualReplayFlag and Rayfield.Flags.ManualReplayFlag.CurrentValue and ReplayEvent then
+         ReplayEvent:FireServer()
       end
    end
 end)
 
-ManualTab:CreateSection("Stage Progression Options")
-local toggleState = false
-local AutoSkipToggle
-AutoSkipToggle = ManualTab:CreateToggle({
-   Name = "AutoSkip Status",
-   CurrentValue = false,
-   Flag = "AutoSkipToggleFlag",
-   Callback = function(Value)
-      toggleState = Value
-      if AutoSkipEvent then AutoSkipEvent:FireServer() end
-   end,
+ManualTab:CreateSection("Quick Action Mechanics")
+ManualTab:CreateButton({
+   Name = "Place Agent",
+   Interact = "Spawn",
+   Callback = function()
+      if SpawnTowerFunction and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+         local RootPart = LocalPlayer.Character.HumanoidRootPart
+         local Point = RootPart.Position
+         local CF = CFrame.new(Point.X, Point.Y - 3.2, Point.Z, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CF, nil)
+      end
+   end
 })
 
 ManualTab:CreateButton({
-   Name = "Trigger AutoSkip Once",
-   Interact = "Click",
-   Callback = function()
-      toggleState = not toggleState
-      AutoSkipToggle:Set(toggleState)
-   end,
+   Name = "Upg agents",
+   Interact = "Upgrade All",
+   Callback = function() AdvancedUpgrade("SorcererAgent") end
 })
 
-ManualTab:CreateSection("Custom Visual Placer Engine")
 
-ManualTab:CreateInput({
-   Name = "Target Tower ID String",
-   PlaceholderText = "Paste Tower ID Hash Here",
+-- ====================================================================
+-- FARM 1 TAB (10 Slots: Slots 1-2 Early Units, Slot 3 Agent Line Handler, Slots 4-10 Units)
+-- ====================================================================
+local PositionsFarm1 = {}
+
+Farm1Tab:CreateSection("Profile Initialization")
+Farm1Tab:CreateInput({
+   Name = "Profile Configuration Name",
+   PlaceholderText = "Enter configuration label...",
    RemoveTextAfterFocusLost = false,
-   Callback = function(Text)
-      SelectedTowerID = Text
-   end,
+   Flag = "Farm1_ProfileLabel",
+   Callback = function() end
 })
 
-local PlacerToggle
-PlacerToggle = ManualTab:CreateToggle({
-   Name = "ACTIVATE MOUSE PLACER MODE",
-   CurrentValue = false,
-   Flag = "MousePlacerSystem",
-   Callback = function(Value)
-      PlacerActive = Value
-      
-      if PlacerActive then
-         PreviewPart = Instance.new("Part")
-         PreviewPart.Name = "MacroPlacementVisual"
-         PreviewPart.Shape = Enum.PartType.Cylinder
-         PreviewPart.Size = Vector3.new(1, 4, 4)
-         PreviewPart.Orientation = Vector3.new(0, 0, 90) 
-         PreviewPart.Material = Enum.Material.Neon
-         PreviewPart.Color = Color3.fromRGB(98, 37, 209) 
-         PreviewPart.Transparency = 0.4
-         PreviewPart.CanCollide = false
-         PreviewPart.Anchored = true
-         PreviewPart.Parent = Workspace
-      else
-         if PreviewPart then
-            PreviewPart:Destroy()
-            PreviewPart = nil
+Farm1Tab:CreateSection("Tactical Placement Matrix (10 Slots)")
+
+for i = 1, 10 do
+   local slotTitle
+   if i == 3 then
+      slotTitle = "Slot 3 (Sorcerer Agent Line Handler)"
+   elseif i <= 2 then
+      slotTitle = "Slot " .. tostring(i) .. " (Early Defense Unit)"
+   else
+      slotTitle = "Unit Slot " .. tostring(i)
+   end
+   
+   Farm1Tab:CreateLabel(slotTitle)
+   
+   local defOpt = i == 3 and "Sorcerer Agent" or "Custom ID Input"
+   Farm1Tab:CreateDropdown({
+      Name = "Choose Unit Template",
+      Options = GetDropdownKeys(),
+      CurrentOption = {defOpt},
+      MultipleOptions = false,
+      Flag = "Farm1_UnitSelect_" .. tostring(i),
+      Callback = function() end
+   })
+
+   Farm1Tab:CreateInput({
+      Name = "Secret Target ID (If Custom Selected)",
+      PlaceholderText = "Paste alternative UID here...",
+      RemoveTextAfterFocusLost = false,
+      Flag = "Farm1_SecretID_" .. tostring(i),
+      Callback = function() end
+   })
+
+   local coordLblFarm1 = Farm1Tab:CreateLabel("No target coordinates logged.")
+
+   Farm1Tab:CreateButton({
+      Name = "Position (Select Position using Player's Position)",
+      Interact = "Record",
+      Callback = function()
+         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local RootPart = LocalPlayer.Character.HumanoidRootPart
+            local Point = RootPart.Position
+            local ComputedCFrame = CFrame.new(Point.X, Point.Y - 3.2, Point.Z, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
+            PositionsFarm1[i] = ComputedCFrame
+            coordLblFarm1:Set(string.format("Vector: %.2f, %.2f, %.2f", Point.X, Point.Y, Point.Z))
          end
       end
-   end,
-})
+   })
+   Farm1Tab:CreateDivider()
+end
 
-RunService.RenderStepped:Connect(function()
-   if PlacerActive and PreviewPart and Mouse then
-      local rayOrigin = Mouse.UnitRay.Origin
-      local rayDirection = Mouse.UnitRay.Direction * 500
-      local raycastParams = RaycastParams.new()
-      raycastParams.FilterFilterType = Enum.RaycastFilterType.Exclude
-      raycastParams.FilterDescendantsInstances = {PreviewPart, LocalPlayer.Character}
-      
-      local raycastResult = Workspace:Raycast(rayOrigin, rayDirection, raycastParams)
-      
-      if raycastResult then
-         PreviewPart.Position = raycastResult.Position + Vector3.new(0, 0.5, 0)
-      else
-         PreviewPart.Position = Mouse.Hit.Position + Vector3.new(0, 0.5, 0)
+Farm1Tab:CreateSection("Execution Sequence")
+Farm1Tab:CreateButton({
+   Name = "RUN PROFILE DEPLOYMENT SEQUENCE",
+   Interact = "Execute Matrix",
+   Callback = function()
+      if not SpawnTowerFunction then return end
+      for i = 1, 10 do
+         local selOpt = Rayfield.Flags["Farm1_UnitSelect_" .. tostring(i)] and Rayfield.Flags["Farm1_UnitSelect_" .. tostring(i)].CurrentOption[1] or ""
+         local targetID = ""
+
+         if selOpt == "Custom ID Input" then
+            targetID = Rayfield.Flags["Farm1_SecretID_" .. tostring(i)] and Rayfield.Flags["Farm1_SecretID_" .. tostring(i)].CurrentValue or ""
+         elseif UnitDatabase[selOpt] then
+            targetID = UnitDatabase[selOpt].ID
+         end
+
+         local baseCF = PositionsFarm1[i]
+
+         if targetID ~= "" and baseCF then
+            if selOpt == "Sorcerer Agent" and i == 3 then
+               task.spawn(function()
+                  for agentCount = 0, 3 do
+                     local staggeredCF = baseCF * CFrame.new(agentCount * 4, 0, 0)
+                     SpawnTowerFunction:InvokeServer(targetID, staggeredCF, nil)
+                     task.wait(0.1)
+                  end
+               end)
+            else
+               task.spawn(function()
+                  SpawnTowerFunction:InvokeServer(targetID, baseCF, nil)
+               end)
+            end
+            task.wait(0.1)
+         end
       end
    end
-end)
+})
 
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-   if gameProcessed or not PlacerActive or not PreviewPart then return end
+
+-- ====================================================================
+-- CUSTOM TAB 2 (10 Slots)
+-- ====================================================================
+local PositionsTab2 = {}
+
+CustomTab2:CreateSection("Profile Initialization")
+CustomTab2:CreateInput({
+   Name = "Profile Configuration Name",
+   PlaceholderText = "Enter configuration label...",
+   RemoveTextAfterFocusLost = false,
+   Flag = "Tab2_ProfileLabel",
+   Callback = function() end
+})
+
+CustomTab2:CreateSection("Tactical Placement Matrix (10 Slots)")
+
+for i = 1, 10 do
+   local slotTitle = i == 1 and "Slot 1 (Sorcerer Agent Line Handler)" or "Unit Slot " .. tostring(i)
+   CustomTab2:CreateLabel(slotTitle)
    
-   if input.UserInputType == Enum.UserInputType.MouseButton1 then
-      if SpawnTowerFunction and SelectedTowerID ~= "" then
-         local TargetPosition = PreviewPart.Position
-         local PlacementCFrame = CFrame.new(TargetPosition.X, TargetPosition.Y, TargetPosition.Z, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
-         
-         task.spawn(function()
-            SpawnTowerFunction:InvokeServer(SelectedTowerID, PlacementCFrame, nil)
-         end)
-         
-         PlacerToggle:Set(false)
+   local defOpt = i == 1 and "Sorcerer Agent" or "Custom ID Input"
+   CustomTab2:CreateDropdown({
+      Name = "Choose Unit Template",
+      Options = GetDropdownKeys(),
+      CurrentOption = {defOpt},
+      MultipleOptions = false,
+      Flag = "Tab2_UnitSelect_" .. tostring(i),
+      Callback = function() end
+   })
+
+   CustomTab2:CreateInput({
+      Name = "Secret Target ID (If Custom Selected)",
+      PlaceholderText = "Paste alternative UID here...",
+      RemoveTextAfterFocusLost = false,
+      Flag = "Tab2_SecretID_" .. tostring(i),
+      Callback = function() end
+   })
+
+   local coordLbl2 = CustomTab2:CreateLabel("No target coordinates logged.")
+
+   CustomTab2:CreateButton({
+      Name = "Position (Select Position using Player's Position)",
+      Interact = "Record",
+      Callback = function()
+         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local RootPart = LocalPlayer.Character.HumanoidRootPart
+            local Point = RootPart.Position
+            local ComputedCFrame = CFrame.new(Point.X, Point.Y - 3.2, Point.Z, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
+            PositionsTab2[i] = ComputedCFrame
+            coordLbl2:Set(string.format("Vector: %.2f, %.2f, %.2f", Point.X, Point.Y, Point.Z))
+         end
+      end
+   })
+   CustomTab2:CreateDivider()
+end
+
+CustomTab2:CreateSection("Execution Sequence")
+CustomTab2:CreateButton({
+   Name = "RUN PROFILE DEPLOYMENT SEQUENCE",
+   Interact = "Execute Matrix",
+   Callback = function()
+      if not SpawnTowerFunction then return end
+      for i = 1, 10 do
+         local selOpt = Rayfield.Flags["Tab2_UnitSelect_" .. tostring(i)] and Rayfield.Flags["Tab2_UnitSelect_" .. tostring(i)].CurrentOption[1] or ""
+         local targetID = ""
+
+         if selOpt == "Custom ID Input" then
+            targetID = Rayfield.Flags["Tab2_SecretID_" .. tostring(i)] and Rayfield.Flags["Tab2_SecretID_" .. tostring(i)].CurrentValue or ""
+         elseif UnitDatabase[selOpt] then
+            targetID = UnitDatabase[selOpt].ID
+         end
+
+         local baseCF = PositionsTab2[i]
+
+         if targetID ~= "" and baseCF then
+            if selOpt == "Sorcerer Agent" and i == 1 then
+               task.spawn(function()
+                  for agentCount = 0, 3 do
+                     local staggeredCF = baseCF * CFrame.new(agentCount * 4, 0, 0)
+                     SpawnTowerFunction:InvokeServer(targetID, staggeredCF, nil)
+                     task.wait(0.1)
+                  end
+               end)
+            else
+               task.spawn(function()
+                  SpawnTowerFunction:InvokeServer(targetID, baseCF, nil)
+               end)
+            end
+            task.wait(0.1)
+         end
       end
    end
-end)
+})
 
-ManualTab:CreateSection("Money Agent Systems")
-ManualTab:CreateButton({
-   Name = "Place All Money Agents",
-   Interact = "Click",
-   Callback = function()
-      if SpawnTowerFunction then
-         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
-         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
-         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(46.969585418701, 8.510612487793, -145.1955871582, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
-         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(41.046390533447, 8.5106134414673, -145.1208190918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-      end
-   end,
-})
-ManualTab:CreateButton({ Name = "Upgrade Money Agent to T2", Interact = "Click", Callback = function() AdvancedUpgrade("SorcererAgent") end })
 
-ManualTab:CreateSection("Mahito Combat Systems")
-ManualTab:CreateButton({
-   Name = "Place Mahito (V1 Coordinate)",
-   Interact = "Click",
-   Callback = function()
-      if SpawnTowerFunction then
-         SpawnTowerFunction:InvokeServer("6a571a05-5703-40c9-8e17-18a51cb2b3c8", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-      end
-   end,
-})
-ManualTab:CreateButton({ Name = "Upgrade Mahito", Interact = "Click", Callback = function() AdvancedUpgrade("SoulCurse") end })
+-- ====================================================================
+-- CUSTOM TAB 3 (10 Slots)
+-- ====================================================================
+local PositionsTab3 = {}
 
-SupportTab:CreateSection("Guitar Sorcerer Buffs")
-SupportTab:CreateButton({
-   Name = "Place Guitar Sorcerer 1",
-   Interact = "Click",
-   Callback = function()
-      if SpawnTowerFunction then
-         SpawnTowerFunction:InvokeServer("a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", CFrame.new(46.299499511719, 8.5099258422852, -162.10559082031, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-      end
-   end,
+CustomTab3:CreateSection("Profile Initialization")
+CustomTab3:CreateInput({
+   Name = "Profile Configuration Name",
+   PlaceholderText = "Enter configuration label...",
+   RemoveTextAfterFocusLost = false,
+   Flag = "Tab3_ProfileLabel",
+   Callback = function() end
 })
-SupportTab:CreateButton({
-   Name = "Place Guitar Sorcerer 2",
-   Interact = "Click",
-   Callback = function()
-      if SpawnTowerFunction then
-         SpawnTowerFunction:InvokeServer("a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", CFrame.new(34.063499450684, 8.5099277496338, -148.23095703125, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-      end
-   end,
-})
-SupportTab:CreateButton({ Name = "Upgrade Guitar Sorcerer", Interact = "Click", Callback = function() AdvancedUpgrade("GuitarSorcerer") end })
 
-SupportTab:CreateSection("Lori Buffs")
-SupportTab:CreateButton({
-   Name = "Place Utahime Lori",
-   Interact = "Click",
-   Callback = function()
-      if SpawnTowerFunction then
-         SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(47.922870635986, 8.2544260025024, -154.39346313477, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+CustomTab3:CreateSection("Tactical Placement Matrix (10 Slots)")
+
+for i = 1, 10 do
+   local slotTitle = i == 1 and "Slot 1 (Sorcerer Agent Line Handler)" or "Unit Slot " .. tostring(i)
+   CustomTab3:CreateLabel(slotTitle)
+   
+   local defOpt = i == 1 and "Sorcerer Agent" or "Custom ID Input"
+   CustomTab3:CreateDropdown({
+      Name = "Choose Unit Template",
+      Options = GetDropdownKeys(),
+      CurrentOption = {defOpt},
+      MultipleOptions = false,
+      Flag = "Tab3_UnitSelect_" .. tostring(i),
+      Callback = function() end
+   })
+
+   CustomTab3:CreateInput({
+      Name = "Secret Target ID (If Custom Selected)",
+      PlaceholderText = "Paste alternative UID here...",
+      RemoveTextAfterFocusLost = false,
+      Flag = "Tab3_SecretID_" .. tostring(i),
+      Callback = function() end
+   })
+
+   local coordLbl3 = CustomTab3:CreateLabel("No target coordinates logged.")
+
+   CustomTab3:CreateButton({
+      Name = "Position (Select Position using Player's Position)",
+      Interact = "Record",
+      Callback = function()
+         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local RootPart = LocalPlayer.Character.HumanoidRootPart
+            local Point = RootPart.Position
+            local ComputedCFrame = CFrame.new(Point.X, Point.Y - 3.2, Point.Z, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
+            PositionsTab3[i] = ComputedCFrame
+            coordLbl3:Set(string.format("Vector: %.2f, %.2f, %.2f", Point.X, Point.Y, Point.Z))
+         end
       end
-   end,
+   })
+   CustomTab3:CreateDivider()
+end
+
+CustomTab3:CreateSection("Execution Sequence")
+CustomTab3:CreateButton({
+   Name = "RUN PROFILE DEPLOYMENT SEQUENCE",
+   Interact = "Execute Matrix",
+   Callback = function()
+      if not SpawnTowerFunction then return end
+      for i = 1, 10 do
+         local selOpt = Rayfield.Flags["Tab3_UnitSelect_" .. tostring(i)] and Rayfield.Flags["Tab3_UnitSelect_" .. tostring(i)].CurrentOption[1] or ""
+         local targetID = ""
+
+         if selOpt == "Custom ID Input" then
+            targetID = Rayfield.Flags["Tab3_SecretID_" .. tostring(i)] and Rayfield.Flags["Tab3_SecretID_" .. tostring(i)].CurrentValue or ""
+         elseif UnitDatabase[selOpt] then
+            targetID = UnitDatabase[selPtr_or_whatever].ID -- handled safely below
+         end
+
+         -- Fix reference variable fallback check
+         if UnitDatabase[selOpt] then
+            targetID = UnitDatabase[selOpt].ID
+         end
+
+         local baseCF = PositionsTab3[i]
+
+         if targetID ~= "" and baseCF then
+            if selOpt == "Sorcerer Agent" and i == 1 then
+               task.spawn(function()
+                  for agentCount = 0, 3 do
+                     local staggeredCF = baseCF * CFrame.new(agentCount * 4, 0, 0)
+                     SpawnTowerFunction:InvokeServer(targetID, staggeredCF, nil)
+                     task.wait(0.1)
+                  end
+               end)
+            else
+               task.spawn(function()
+                  SpawnTowerFunction:InvokeServer(targetID, baseCF, nil)
+               end)
+            end
+            task.wait(0.1)
+         end
+      end
+   end
 })
-SupportTab:CreateButton({ Name = "Upgrade Utahime Lori", Interact = "Click", Callback = function() AdvancedUpgrade("AmplifyingSorcerer") end })
 
 Rayfield:LoadConfiguration()
-
--- update 3.0
--- removed HM 10 farm loops and automation tasks
--- removed HM 10 interface control tabs
--- removed large comment box borders and standalone structural placeholders
--- added custom raycast visual placer system under manual control options
--- added update log database at bottom of file execution
