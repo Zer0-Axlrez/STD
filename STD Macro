@@ -2,8 +2,8 @@ local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/Siri
 
 local Window = Rayfield:CreateWindow({
    Name = "STD Macro",
-   LoadingTitle = "Initializing Tactical Niggafied Systems...",
-   LoadingSubtitle = "Configuring Useful Slave Status...",
+   LoadingTitle = "Initializing Systems...",
+   LoadingSubtitle = "Configuring Useful Status...",
    DisableRayfieldPrompts = true,
    DisableIntro = true, 
    ConfigurationSaving = { 
@@ -44,23 +44,30 @@ local UpgradeTowerFunction = Functions and Functions:WaitForChild("UpgradeTower"
 local UnitDatabase = {
     ["Sorcerer Agent"] = {ID = "da43ddf4-e433-4c63-85db-00c3baead3ba", Remote = "SorcererAgent"},
     ["Toji (Base)"]    = {ID = "295b7432-fe4b-4d9f-bb01-a4a5463318e7", Remote = "SorcererKiller"},
-    ["Toji Evo"]       = {ID = "9670732c-4393-4a60-aa25-4feb0db974ef", Remote = "SorcererKillerEvo"},
-    ["Gojo"]           = {ID = "729ac814-fab1-4814-bddf-53618f5c248d", Remote = "StrongestSorcerer"},
-    ["Sukuna"]         = {ID = "9652f4cd-1993-475a-a232-c6e8f47d7a18", Remote = "KingOfCurses"},
-    ["Megumi"]         = {ID = "ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", Remote = "ShadowSorcerer"},
-    ["Mahito"]         = {ID = "6a571a05-5703-40c9-8e17-18a51cb2b3c8", Remote = "SoulCurse"},
-    ["Utahime"]        = {ID = "e95c062a-ccad-41d6-9086-738583900917", Remote = "AmplifyingSorcerer"},
-    ["Guitar Sorcerer"]= {ID = "a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", Remote = "GuitarSorcerer"},
-    ["Momo"]           = {ID = "d343fc20-dc32-4e08-90eb-de8e3f9076ac", Remote = "BroomSorcerer"},
-    ["Kirara"]         = {ID = "c247b6f3-ed09-43e6-91b3-aa902d157b9a", Remote = "StarSorcerer"}
+    ["Toji Evo"]        = {ID = "9670732c-4393-4a60-aa25-4feb0db974ef", Remote = "SorcererKillerEvo"},
+    ["Gojo"]            = {ID = "729ac814-fab1-4814-bddf-53618f5c248d", Remote = "StrongestSorcerer"},
+    ["Sukuna"]          = {ID = "9652f4cd-1993-475a-a232-c6e8f47d7a18", Remote = "KingOfCurses"},
+    ["Megumi"]          = {ID = "ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", Remote = "ShadowSorcerer"},
+    ["Mahito"]          = {ID = "6a571a05-5703-40c9-8e17-18a51cb2b3c8", Remote = "SoulCurse"},
+    ["Utahime"]         = {ID = "e95c062a-ccad-41d6-9086-738583900917", Remote = "AmplifyingSorcerer"},
+    ["Guitar Sorcerer"] = {ID = "a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", Remote = "GuitarSorcerer"},
+    ["Momo"]            = {ID = "d343fc20-dc32-4e08-90eb-de8e3f9076ac", Remote = "BroomSorcerer"},
+    ["Kirara"]          = {ID = "c247b6f3-ed09-43e6-91b3-aa902d157b9a", Remote = "StarSorcerer"}
 }
 
-local function GetDropdownKeys()
+-- Helper function to generate filtered and alphabetically sorted unit lists
+local function GetFilteredDropdownKeys(filterText)
     local keys = {"Custom ID Input"}
     for name, _ in pairs(UnitDatabase) do
-        table.insert(keys, name)
+        if not filterText or filterText == "" or string.find(string.lower(name), string.lower(filterText)) then
+            table.insert(keys, name)
+        end
     end
-    table.sort(keys)
+    table.sort(keys, function(a, b)
+        if a == "Custom ID Input" then return true end
+        if b == "Custom ID Input" then return false end
+        return a < b
+    end)
     return keys
 end
 
@@ -229,10 +236,24 @@ for i = 1, 10 do
    
    Farm1Tab:CreateLabel(slotTitle)
    
+   -- Search Input for Unit Filtering
+   local dropdownRef
+   Farm1Tab:CreateInput({
+      Name = "Search Unit Name",
+      PlaceholderText = "Type to filter units...",
+      RemoveTextAfterFocusLost = false,
+      Flag = "Farm1_Search_" .. tostring(i),
+      Callback = function(text)
+         if dropdownRef then
+            dropdownRef:Refresh(GetFilteredDropdownKeys(text))
+         end
+      end
+   })
+   
    local defOpt = i == 3 and "Sorcerer Agent" or "Custom ID Input"
-   Farm1Tab:CreateDropdown({
+   dropdownRef = Farm1Tab:CreateDropdown({
       Name = "Choose Unit Template",
-      Options = GetDropdownKeys(),
+      Options = GetFilteredDropdownKeys(""),
       CurrentOption = {defOpt},
       MultipleOptions = false,
       Flag = "Farm1_UnitSelect_" .. tostring(i),
@@ -324,10 +345,23 @@ for i = 1, 10 do
    local slotTitle = i == 1 and "Slot 1 (Sorcerer Agent Line Handler)" or "Unit Slot " .. tostring(i)
    CustomTab2:CreateLabel(slotTitle)
    
+   local dropdownRef2
+   CustomTab2:CreateInput({
+      Name = "Search Unit Name",
+      PlaceholderText = "Type to filter units...",
+      RemoveTextAfterFocusLost = false,
+      Flag = "Tab2_Search_" .. tostring(i),
+      Callback = function(text)
+         if dropdownRef2 then
+            dropdownRef2:Refresh(GetFilteredDropdownKeys(text))
+         end
+      end
+   })
+   
    local defOpt = i == 1 and "Sorcerer Agent" or "Custom ID Input"
-   CustomTab2:CreateDropdown({
+   dropdownRef2 = CustomTab2:CreateDropdown({
       Name = "Choose Unit Template",
-      Options = GetDropdownKeys(),
+      Options = GetFilteredDropdownKeys(""),
       CurrentOption = {defOpt},
       MultipleOptions = false,
       Flag = "Tab2_UnitSelect_" .. tostring(i),
@@ -419,10 +453,23 @@ for i = 1, 10 do
    local slotTitle = i == 1 and "Slot 1 (Sorcerer Agent Line Handler)" or "Unit Slot " .. tostring(i)
    CustomTab3:CreateLabel(slotTitle)
    
+   local dropdownRef3
+   CustomTab3:CreateInput({
+      Name = "Search Unit Name",
+      PlaceholderText = "Type to filter units...",
+      RemoveTextAfterFocusLost = false,
+      Flag = "Tab3_Search_" .. tostring(i),
+      Callback = function(text)
+         if dropdownRef3 then
+            dropdownRef3:Refresh(GetFilteredDropdownKeys(text))
+         end
+      end
+   })
+   
    local defOpt = i == 1 and "Sorcerer Agent" or "Custom ID Input"
-   CustomTab3:CreateDropdown({
+   dropdownRef3 = CustomTab3:CreateDropdown({
       Name = "Choose Unit Template",
-      Options = GetDropdownKeys(),
+      Options = GetFilteredDropdownKeys(""),
       CurrentOption = {defOpt},
       MultipleOptions = false,
       Flag = "Tab3_UnitSelect_" .. tostring(i),
@@ -468,11 +515,6 @@ CustomTab3:CreateButton({
          if selOpt == "Custom ID Input" then
             targetID = Rayfield.Flags["Tab3_SecretID_" .. tostring(i)] and Rayfield.Flags["Tab3_SecretID_" .. tostring(i)].CurrentValue or ""
          elseif UnitDatabase[selOpt] then
-            targetID = UnitDatabase[selPtr_or_whatever].ID -- handled safely below
-         end
-
-         -- Fix reference variable fallback check
-         if UnitDatabase[selOpt] then
             targetID = UnitDatabase[selOpt].ID
          end
 
