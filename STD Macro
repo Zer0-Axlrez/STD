@@ -1,9 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "STD Macro - NiggerHub",
-   LoadingTitle = "Initializing Niggafied Bamboozled Systems...",
-   LoadingSubtitle = "Configuring Useful Slave Status...",
+   Name = "STD Macro",
+   LoadingTitle = "Initializing Systems...",
+   LoadingSubtitle = "Configuring Useful Status...",
    DisableRayfieldPrompts = true,
    DisableIntro = true, 
    ConfigurationSaving = { 
@@ -13,9 +13,9 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
--- Generate Script Interface Layout Tabs
-local MainFarmTab = Window:CreateTab("Main Farms", 4483362456)
-local ManualTab = Window:CreateTab("Manual Control", 4483362456)
+-- Generate Script Interface Layout Tabs (Renamed Farm 1 to Megumi farm, Farm 2/3 kept)
+local MegumiFarmTab = Window:CreateTab("Megumi farm", 4483362456)
+local ManualTab = Window:CreateTab("QOL Controls", 4483362456)
 local Farm1Tab = Window:CreateTab("Farm 1", 4483362456)
 local CustomTab2 = Window:CreateTab("Farm 2", 4483362456)
 local CustomTab3 = Window:CreateTab("Farm 3", 4483362456)
@@ -86,13 +86,59 @@ local function AdvancedUpgrade(TargetName)
    end
 end
 
--- ==================== MAIN FARM TAB ====================
-MainFarmTab:CreateSection("Preconfigured Farm Loops")
-MainFarmTab:CreateToggle({ Name = "ENABLE V3 FARM LOOP", CurrentValue = false, Flag = "V3FarmLoop", Callback = function() end })
-MainFarmTab:CreateToggle({ Name = "ENABLE V2 FARM LOOP", CurrentValue = false, Flag = "V2FarmLoop", Callback = function() end })
-MainFarmTab:CreateToggle({ Name = "ENABLE V1 FARM LOOP", CurrentValue = false, Flag = "V1FarmLoop", Callback = function() end })
+-- Helper execution sequence runner for sequential placement and upgrading
+local function RunCustomFarmLoop(positionsTable, prefix)
+    if not SpawnTowerFunction then return end
+    
+    -- 1. Place all 10 in order with 0.2s cd
+    local spawnedTowers = {}
+    for i = 1, 10 do
+        local selOpt = Rayfield.Flags[prefix .. "_UnitSelect_" .. tostring(i)] and Rayfield.Flags[prefix .. "_UnitSelect_" .. tostring(i)].CurrentOption[1] or ""
+        local targetID = ""
 
--- Execution engine for V3 Farm Loop
+        if selOpt == "Custom ID Input" then
+            targetID = Rayfield.Flags[prefix .. "_SecretID_" .. tostring(i)] and Rayfield.Flags[prefix .. "_SecretID_" .. tostring(i)].CurrentValue or ""
+        elseif UnitDatabase[selOpt] then
+            targetID = UnitDatabase[selOpt].ID
+        end
+
+        local baseCF = positionsTable[i]
+
+        if targetID ~= "" and baseCF then
+            if selOpt == "Sorcerer Agent" and i == 3 then
+                for agentCount = 0, 3 do
+                    local staggeredCF = baseCF * CFrame.new(agentCount * 4, 0, 0)
+                    local result = SpawnTowerFunction:InvokeServer(targetID, staggeredCF, nil)
+                    if result then table.insert(spawnedTowers, result) end
+                    task.wait(0.1)
+                end
+            else
+                local result = SpawnTowerFunction:InvokeServer(targetID, baseCF, nil)
+                if result then table.insert(spawnedTowers, result) end
+            end
+            task.wait(0.2)
+        end
+    end
+
+    -- 2. Upgrade them 1 -> 10 sequentially
+    task.wait(0.5)
+    for _, towerInstance in ipairs(spawnedTowers) do
+        if UpgradeTowerFunction and towerInstance then
+            pcall(function()
+                UpgradeTowerFunction:InvokeServer(towerInstance)
+            end)
+            task.wait(0.2)
+        end
+    end
+end
+
+-- ==================== MEGUMI FARM TAB ====================
+MegumiFarmTab:CreateSection("Preconfigured Farm Loops")
+MegumiFarmTab:CreateToggle({ Name = "ENABLE V3 FARM LOOP", CurrentValue = false, Flag = "V3FarmLoop", Callback = function() end })
+MegumiFarmTab:CreateToggle({ Name = "ENABLE V2 FARM LOOP", CurrentValue = false, Flag = "V2FarmLoop", Callback = function() end })
+MegumiFarmTab:CreateToggle({ Name = "ENABLE V1 FARM LOOP", CurrentValue = false, Flag = "V1FarmLoop", Callback = function() end })
+
+-- Execution engines for Megumi Farm Tab loops...
 task.spawn(function()
    while true do
       task.wait(1.0)
@@ -119,7 +165,6 @@ task.spawn(function()
    end
 end)
 
--- Execution engine for V2 Farm Loop
 task.spawn(function()
    while true do
       task.wait(0.1)
@@ -145,7 +190,6 @@ task.spawn(function()
    end
 end)
 
--- Execution engine for V1 Farm Loop
 task.spawn(function()
    while true do
       task.wait(1.0) 
@@ -160,7 +204,7 @@ task.spawn(function()
    end
 end)
 
--- ==================== MANUAL TAB ====================
+-- ==================== MANUAL TAB (QOL Controls) ====================
 ManualTab:CreateSection("Automation Services")
 ManualTab:CreateToggle({
    Name = "Auto Skip Waves",
@@ -209,49 +253,48 @@ ManualTab:CreateButton({
 
 
 -- ====================================================================
--- FARM 1 TAB (10 Slots: Slots 1-2 Early Units, Slot 3 Agent Line Handler, Slots 4-10 Units)
+-- FARM 1 TAB
 -- ====================================================================
 local PositionsFarm1 = {}
 
-Farm1Tab:CreateSection("Profile Initialization")
-Farm1Tab:CreateInput({
-   Name = "Profile Configuration Name",
-   PlaceholderText = "Enter configuration label...",
-   RemoveTextAfterFocusLost = false,
-   Flag = "Farm1_ProfileLabel",
+Farm1Tab:CreateSection("Automation Toggle")
+Farm1Tab:CreateToggle({
+   Name = "Auto Farm",
+   CurrentValue = false,
+   Flag = "Farm1_AutoFarmToggle",
    Callback = function() end
 })
+
+-- Auto loop runner for Farm 1 (1s loop delay)
+task.spawn(function()
+   while true do
+      task.wait(1.0)
+      if Rayfield.Flags and Rayfield.Flags.Farm1_AutoFarmToggle and Rayfield.Flags.Farm1_AutoFarmToggle.CurrentValue then
+         RunCustomFarmLoop(PositionsFarm1, "Farm1")
+      end
+   end
+end)
 
 Farm1Tab:CreateSection("Tactical Placement Matrix (10 Slots)")
 
 for i = 1, 10 do
-   local slotTitle
-   if i == 3 then
-      slotTitle = "Slot 3 (Sorcerer Agent Line Handler)"
-   elseif i <= 2 then
-      slotTitle = "Slot " .. tostring(i) .. " (Early Defense Unit)"
-   else
-      slotTitle = "Unit Slot " .. tostring(i)
-   end
+   Farm1Tab:CreateLabel("Unit " .. tostring(i))
    
-   Farm1Tab:CreateLabel(slotTitle)
-   
-   -- Search Input for Unit Filtering
-   local dropdownRef
+   local dropdownRef1
    Farm1Tab:CreateInput({
       Name = "Search Unit Name",
       PlaceholderText = "Type to filter units...",
       RemoveTextAfterFocusLost = false,
       Flag = "Farm1_Search_" .. tostring(i),
       Callback = function(text)
-         if dropdownRef then
-            dropdownRef:Refresh(GetFilteredDropdownKeys(text))
+         if dropdownRef1 then
+            dropdownRef1:Refresh(GetFilteredDropdownKeys(text))
          end
       end
    })
    
    local defOpt = i == 3 and "Sorcerer Agent" or "Custom ID Input"
-   dropdownRef = Farm1Tab:CreateDropdown({
+   dropdownRef1 = Farm1Tab:CreateDropdown({
       Name = "Choose Unit Template",
       Options = GetFilteredDropdownKeys(""),
       CurrentOption = {defOpt},
@@ -268,10 +311,10 @@ for i = 1, 10 do
       Callback = function() end
    })
 
-   local coordLblFarm1 = Farm1Tab:CreateLabel("No target coordinates logged.")
+   local coordLblFarm1 = Farm1Tab:CreateLabel("Position logged: No target coordinates logged.")
 
    Farm1Tab:CreateButton({
-      Name = "Position (Select Position using Player's Position)",
+      Name = "Log player position",
       Interact = "Record",
       Callback = function()
          if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -279,71 +322,58 @@ for i = 1, 10 do
             local Point = RootPart.Position
             local ComputedCFrame = CFrame.new(Point.X, Point.Y - 3.2, Point.Z, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
             PositionsFarm1[i] = ComputedCFrame
-            coordLblFarm1:Set(string.format("Vector: %.2f, %.2f, %.2f", Point.X, Point.Y, Point.Z))
+            coordLblFarm1:Set(string.format("Position logged: Vector: %.2f, %.2f, %.2f", Point.X, Point.Y, Point.Z))
          end
       end
    })
    Farm1Tab:CreateDivider()
 end
 
-Farm1Tab:CreateSection("Execution Sequence")
+Farm1Tab:CreateSection("Execution & Configuration")
 Farm1Tab:CreateButton({
-   Name = "RUN PROFILE DEPLOYMENT SEQUENCE",
+   Name = "Run Farm",
    Interact = "Execute Matrix",
    Callback = function()
-      if not SpawnTowerFunction then return end
-      for i = 1, 10 do
-         local selOpt = Rayfield.Flags["Farm1_UnitSelect_" .. tostring(i)] and Rayfield.Flags["Farm1_UnitSelect_" .. tostring(i)].CurrentOption[1] or ""
-         local targetID = ""
-
-         if selOpt == "Custom ID Input" then
-            targetID = Rayfield.Flags["Farm1_SecretID_" .. tostring(i)] and Rayfield.Flags["Farm1_SecretID_" .. tostring(i)].CurrentValue or ""
-         elseif UnitDatabase[selOpt] then
-            targetID = UnitDatabase[selOpt].ID
-         end
-
-         local baseCF = PositionsFarm1[i]
-
-         if targetID ~= "" and baseCF then
-            if selOpt == "Sorcerer Agent" and i == 3 then
-               task.spawn(function()
-                  for agentCount = 0, 3 do
-                     local staggeredCF = baseCF * CFrame.new(agentCount * 4, 0, 0)
-                     SpawnTowerFunction:InvokeServer(targetID, staggeredCF, nil)
-                     task.wait(0.1)
-                  end
-               end)
-            else
-               task.spawn(function()
-                  SpawnTowerFunction:InvokeServer(targetID, baseCF, nil)
-               end)
-            end
-            task.wait(0.1)
-         end
-      end
+      RunCustomFarmLoop(PositionsFarm1, "Farm1")
    end
 })
 
-
--- ====================================================================
--- CUSTOM TAB 2 (10 Slots)
--- ====================================================================
-local PositionsTab2 = {}
-
-CustomTab2:CreateSection("Profile Initialization")
-CustomTab2:CreateInput({
+Farm1Tab:CreateInput({
    Name = "Profile Configuration Name",
    PlaceholderText = "Enter configuration label...",
    RemoveTextAfterFocusLost = false,
-   Flag = "Tab2_ProfileLabel",
+   Flag = "Farm1_ProfileLabel",
    Callback = function() end
 })
+
+
+-- ====================================================================
+-- CUSTOM TAB 2 (Farm 2)
+-- ====================================================================
+local PositionsTab2 = {}
+
+CustomTab2:CreateSection("Automation Toggle")
+CustomTab2:CreateToggle({
+   Name = "Auto Farm",
+   CurrentValue = false,
+   Flag = "Tab2_AutoFarmToggle",
+   Callback = function() end
+})
+
+-- Auto loop runner for Farm 2
+task.spawn(function()
+   while true do
+      task.wait(1.0)
+      if Rayfield.Flags and Rayfield.Flags.Tab2_AutoFarmToggle and Rayfield.Flags.Tab2_AutoFarmToggle.CurrentValue then
+         RunCustomFarmLoop(PositionsTab2, "Tab2")
+      end
+   end
+end)
 
 CustomTab2:CreateSection("Tactical Placement Matrix (10 Slots)")
 
 for i = 1, 10 do
-   local slotTitle = i == 1 and "Slot 1 (Sorcerer Agent Line Handler)" or "Unit Slot " .. tostring(i)
-   CustomTab2:CreateLabel(slotTitle)
+   CustomTab2:CreateLabel("Unit " .. tostring(i))
    
    local dropdownRef2
    CustomTab2:CreateInput({
@@ -376,10 +406,10 @@ for i = 1, 10 do
       Callback = function() end
    })
 
-   local coordLbl2 = CustomTab2:CreateLabel("No target coordinates logged.")
+   local coordLbl2 = CustomTab2:CreateLabel("Position logged: No target coordinates logged.")
 
    CustomTab2:CreateButton({
-      Name = "Position (Select Position using Player's Position)",
+      Name = "Log player position",
       Interact = "Record",
       Callback = function()
          if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -387,71 +417,58 @@ for i = 1, 10 do
             local Point = RootPart.Position
             local ComputedCFrame = CFrame.new(Point.X, Point.Y - 3.2, Point.Z, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
             PositionsTab2[i] = ComputedCFrame
-            coordLbl2:Set(string.format("Vector: %.2f, %.2f, %.2f", Point.X, Point.Y, Point.Z))
+            coordLbl2:Set(string.format("Position logged: Vector: %.2f, %.2f, %.2f", Point.X, Point.Y, Point.Z))
          end
       end
    })
    CustomTab2:CreateDivider()
 end
 
-CustomTab2:CreateSection("Execution Sequence")
+CustomTab2:CreateSection("Execution & Configuration")
 CustomTab2:CreateButton({
-   Name = "RUN PROFILE DEPLOYMENT SEQUENCE",
+   Name = "Run Farm",
    Interact = "Execute Matrix",
    Callback = function()
-      if not SpawnTowerFunction then return end
-      for i = 1, 10 do
-         local selOpt = Rayfield.Flags["Tab2_UnitSelect_" .. tostring(i)] and Rayfield.Flags["Tab2_UnitSelect_" .. tostring(i)].CurrentOption[1] or ""
-         local targetID = ""
-
-         if selOpt == "Custom ID Input" then
-            targetID = Rayfield.Flags["Tab2_SecretID_" .. tostring(i)] and Rayfield.Flags["Tab2_SecretID_" .. tostring(i)].CurrentValue or ""
-         elseif UnitDatabase[selOpt] then
-            targetID = UnitDatabase[selOpt].ID
-         end
-
-         local baseCF = PositionsTab2[i]
-
-         if targetID ~= "" and baseCF then
-            if selOpt == "Sorcerer Agent" and i == 1 then
-               task.spawn(function()
-                  for agentCount = 0, 3 do
-                     local staggeredCF = baseCF * CFrame.new(agentCount * 4, 0, 0)
-                     SpawnTowerFunction:InvokeServer(targetID, staggeredCF, nil)
-                     task.wait(0.1)
-                  end
-               end)
-            else
-               task.spawn(function()
-                  SpawnTowerFunction:InvokeServer(targetID, baseCF, nil)
-               end)
-            end
-            task.wait(0.1)
-         end
-      end
+      RunCustomFarmLoop(PositionsTab2, "Tab2")
    end
 })
 
-
--- ====================================================================
--- CUSTOM TAB 3 (10 Slots)
--- ====================================================================
-local PositionsTab3 = {}
-
-CustomTab3:CreateSection("Profile Initialization")
-CustomTab3:CreateInput({
+CustomTab2:CreateInput({
    Name = "Profile Configuration Name",
    PlaceholderText = "Enter configuration label...",
    RemoveTextAfterFocusLost = false,
-   Flag = "Tab3_ProfileLabel",
+   Flag = "Tab2_ProfileLabel",
    Callback = function() end
 })
+
+
+-- ====================================================================
+-- CUSTOM TAB 3 (Farm 3)
+-- ====================================================================
+local PositionsTab3 = {}
+
+CustomTab3:CreateSection("Automation Toggle")
+CustomTab3:CreateToggle({
+   Name = "Auto Farm",
+   CurrentValue = false,
+   Flag = "Tab3_AutoFarmToggle",
+   Callback = function() end
+})
+
+-- Auto loop runner for Farm 3
+task.spawn(function()
+   while true do
+      task.wait(1.0)
+      if Rayfield.Flags and Rayfield.Flags.Tab3_AutoFarmToggle and Rayfield.Flags.Tab3_AutoFarmToggle.CurrentValue then
+         RunCustomFarmLoop(PositionsTab3, "Tab3")
+      end
+   end
+end)
 
 CustomTab3:CreateSection("Tactical Placement Matrix (10 Slots)")
 
 for i = 1, 10 do
-   local slotTitle = i == 1 and "Slot 1 (Sorcerer Agent Line Handler)" or "Unit Slot " .. tostring(i)
-   CustomTab3:CreateLabel(slotTitle)
+   CustomTab3:CreateLabel("Unit " .. tostring(i))
    
    local dropdownRef3
    CustomTab3:CreateInput({
@@ -484,10 +501,10 @@ for i = 1, 10 do
       Callback = function() end
    })
 
-   local coordLbl3 = CustomTab3:CreateLabel("No target coordinates logged.")
+   local coordLbl3 = CustomTab3:CreateLabel("Position logged: No target coordinates logged.")
 
    CustomTab3:CreateButton({
-      Name = "Position (Select Position using Player's Position)",
+      Name = "Log player position",
       Interact = "Record",
       Callback = function()
          if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -495,49 +512,28 @@ for i = 1, 10 do
             local Point = RootPart.Position
             local ComputedCFrame = CFrame.new(Point.X, Point.Y - 3.2, Point.Z, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
             PositionsTab3[i] = ComputedCFrame
-            coordLbl3:Set(string.format("Vector: %.2f, %.2f, %.2f", Point.X, Point.Y, Point.Z))
+            coordLbl3:Set(string.format("Position logged: Vector: %.2f, %.2f, %.2f", Point.X, Point.Y, Point.Z))
          end
       end
    })
    CustomTab3:CreateDivider()
 end
 
-CustomTab3:CreateSection("Execution Sequence")
+CustomTab3:CreateSection("Execution & Configuration")
 CustomTab3:CreateButton({
-   Name = "RUN PROFILE DEPLOYMENT SEQUENCE",
+   Name = "Run Farm",
    Interact = "Execute Matrix",
    Callback = function()
-      if not SpawnTowerFunction then return end
-      for i = 1, 10 do
-         local selOpt = Rayfield.Flags["Tab3_UnitSelect_" .. tostring(i)] and Rayfield.Flags["Tab3_UnitSelect_" .. tostring(i)].CurrentOption[1] or ""
-         local targetID = ""
-
-         if selOpt == "Custom ID Input" then
-            targetID = Rayfield.Flags["Tab3_SecretID_" .. tostring(i)] and Rayfield.Flags["Tab3_SecretID_" .. tostring(i)].CurrentValue or ""
-         elseif UnitDatabase[selOpt] then
-            targetID = UnitDatabase[selOpt].ID
-         end
-
-         local baseCF = PositionsTab3[i]
-
-         if targetID ~= "" and baseCF then
-            if selOpt == "Sorcerer Agent" and i == 1 then
-               task.spawn(function()
-                  for agentCount = 0, 3 do
-                     local staggeredCF = baseCF * CFrame.new(agentCount * 4, 0, 0)
-                     SpawnTowerFunction:InvokeServer(targetID, staggeredCF, nil)
-                     task.wait(0.1)
-                  end
-               end)
-            else
-               task.spawn(function()
-                  SpawnTowerFunction:InvokeServer(targetID, baseCF, nil)
-               end)
-            end
-            task.wait(0.1)
-         end
-      end
+      RunCustomFarmLoop(PositionsTab3, "Tab3")
    end
+})
+
+CustomTab3:CreateInput({
+   Name = "Profile Configuration Name",
+   PlaceholderText = "Enter configuration label...",
+   RemoveTextAfterFocusLost = false,
+   Flag = "Tab3_ProfileLabel",
+   Callback = function() end
 })
 
 Rayfield:LoadConfiguration()
