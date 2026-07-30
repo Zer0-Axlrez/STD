@@ -40,20 +40,20 @@ local Functions = ReplicatedStorage:WaitForChild("Functions", 5)
 local SpawnTowerFunction = Functions and Functions:WaitForChild("SpawnNewTower", 5)
 local UpgradeTowerFunction = Functions and Functions:WaitForChild("UpgradeTower", 5)
 
--- Global Database of Known Core Identifiers (Updated with Dual Megumi variants)
+-- Global Database of Known Core Identifiers
 local UnitDatabase = {
-    ["Sorcerer Agent"] = {ID = "da43ddf4-e433-4c63-85db-00c3baead3ba", Remote = "SorcererAgent"},
-    ["Toji (Base)"]    = {ID = "295b7432-fe4b-4d9f-bb01-a4a5463318e7", Remote = "SorcererKiller"},
-    ["Toji Evo"]        = {ID = "9670732c-4393-4a60-aa25-4feb0db974ef", Remote = "SorcererKillerEvo"},
-    ["Gojo"]            = {ID = "729ac814-fab1-4814-bddf-53618f5c248d", Remote = "StrongestSorcerer"},
-    ["Sukuna"]          = {ID = "9652f4cd-1993-475a-a232-c6e8f47d7a18", Remote = "KingOfCurses"},
-    ["Megumi (UID 1)"]  = {ID = "ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", Remote = "ShadowSorcerer"},
-    ["Megumi (UID 2)"]  = {ID = "7d6b7aa0-7bd4-4d2f-99a6-4884bbde8c7d", Remote = "ShadowSorcerer"},
-    ["Mahito"]          = {ID = "6a571a05-5703-40c9-8e17-18a51cb2b3c8", Remote = "SoulCurse"},
-    ["Utahime"]         = {ID = "e95c062a-ccad-41d6-9086-738583900917", Remote = "AmplifyingSorcerer"},
-    ["Guitar Sorcerer"] = {ID = "a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", Remote = "GuitarSorcerer"},
-    ["Momo"]            = {ID = "d343fc20-dc32-4e08-90eb-de8e3f9076ac", Remote = "BroomSorcerer"},
-    ["Kirara"]          = {ID = "c247b6f3-ed09-43e6-91b3-aa902d157b9a", Remote = "StarSorcerer"}
+    ["Sorcerer Agent"] = {ID = "da43ddf4-e433-4c63-85db-00c3baead3ba", UpgradeName = "SorcererAgent"},
+    ["Toji (Base)"]    = {ID = "295b7432-fe4b-4d9f-bb01-a4a5463318e7", UpgradeName = "SorcererKiller"},
+    ["Toji Evo"]        = {ID = "9670732c-4393-4a60-aa25-4feb0db974ef", UpgradeName = "SorcererKillerEvo"},
+    ["Gojo"]            = {ID = "729ac814-fab1-4814-bddf-53618f5c248d", UpgradeName = "StrongestSorcerer"},
+    ["Sukuna"]          = {ID = "9652f4cd-1993-475a-a232-c6e8f47d7a18", UpgradeName = "KingOfCurses"},
+    ["Megumi (UID 1)"]  = {ID = "ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", UpgradeName = "ShadowSorcerer"},
+    ["Megumi (UID 2)"]  = {ID = "7d6b7aa0-7bd4-4d2f-99a6-4884bbde8c7d", UpgradeName = "ShadowSorcerer"},
+    ["Mahito"]          = {ID = "6a571a05-5703-40c9-8e17-18a51cb2b3c8", UpgradeName = "SoulCurse"},
+    ["Utahime"]         = {ID = "e95c062a-ccad-41d6-9086-738583900917", UpgradeName = "AmplifyingSorcerer"},
+    ["Guitar Sorcerer"] = {ID = "a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", UpgradeName = "GuitarSorcerer"},
+    ["Momo"]            = {ID = "d343fc20-dc32-4e08-90eb-de8e3f9076ac", UpgradeName = "BroomSorcerer"},
+    ["Kirara"]          = {ID = "c247b6f3-ed09-43e6-91b3-aa902d157b9a", UpgradeName = "StarSorcerer"}
 }
 
 -- Helper function to generate filtered and alphabetically sorted unit lists
@@ -91,16 +91,20 @@ end
 local function RunCustomFarmLoop(positionsTable, prefix)
     if not SpawnTowerFunction then return end
     
+    -- Track both the server return instance and the selected unit info for each slot 1 -> 10
+    local placedData = {}
+
     -- 1. Place all 10 in order with 0.2s cd
-    local spawnedTowers = {}
     for i = 1, 10 do
         local selOpt = Rayfield.Flags[prefix .. "_UnitSelect_" .. tostring(i)] and Rayfield.Flags[prefix .. "_UnitSelect_" .. tostring(i)].CurrentOption[1] or ""
         local targetID = ""
+        local unitRecord = nil
 
         if selOpt == "Custom ID Input" then
             targetID = Rayfield.Flags[prefix .. "_SecretID_" .. tostring(i)] and Rayfield.Flags[prefix .. "_SecretID_" .. tostring(i)].CurrentValue or ""
         elseif UnitDatabase[selOpt] then
-            targetID = UnitDatabase[selOpt].ID
+            unitRecord = UnitDatabase[selOpt]
+            targetID = unitRecord.ID
         end
 
         local baseCF = positionsTable[i]
@@ -110,23 +114,36 @@ local function RunCustomFarmLoop(positionsTable, prefix)
                 for agentCount = 0, 3 do
                     local staggeredCF = baseCF * CFrame.new(agentCount * 4, 0, 0)
                     local result = SpawnTowerFunction:InvokeServer(targetID, staggeredCF, nil)
-                    if result then table.insert(spawnedTowers, result) end
+                    if result then 
+                        table.insert(placedData, {Instance = result, Record = unitRecord, SelOpt = selOpt}) 
+                    end
                     task.wait(0.1)
                 end
             else
                 local result = SpawnTowerFunction:InvokeServer(targetID, baseCF, nil)
-                if result then table.insert(spawnedTowers, result) end
+                if result then 
+                    table.insert(placedData, {Instance = result, Record = unitRecord, SelOpt = selOpt}) 
+                end
             end
             task.wait(0.2)
         end
     end
 
-    -- 2. Upgrade them 1 -> 10 sequentially
+    -- 2. Upgrade them 1 -> 10 sequentially based on the dropdown selection
     task.wait(0.5)
-    for _, towerInstance in ipairs(spawnedTowers) do
-        if UpgradeTowerFunction and towerInstance then
+    for _, data in ipairs(placedData) do
+        if UpgradeTowerFunction then
             pcall(function()
-                UpgradeTowerFunction:InvokeServer(towerInstance)
+                -- If the tower instance returned directly from SpawnNewTower is valid, invoke it directly
+                if typeof(data.Instance) == "Instance" then
+                    UpgradeTowerFunction:InvokeServer(data.Instance)
+                elseif data.Record and data.Record.UpgradeName then
+                    -- Fallback: Search workspace for matching name if instance reference wasn't returned
+                    AdvancedUpgrade(data.Record.UpgradeName)
+                elseif data.SelOpt == "Custom ID Input" then
+                    -- Generic fallback scan if custom ID was used
+                    AdvancedUpgrade("ShadowSorcerer")
+                end
             end)
             task.wait(0.2)
         end
@@ -480,7 +497,7 @@ for i = 1, 10 do
       end
    })
    
-   local defOpt = i == 1 and "Sorcerer Agent" or "Custom ID Input"
+   val defOpt = i == 1 and "Sorcerer Agent" or "Custom ID Input"
    dropdownRef3 = CustomTab3:CreateDropdown({
       Name = "Choose Unit Template",
       Options = GetFilteredDropdownKeys(""),
