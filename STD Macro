@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
--- Generate Script Interface Layout Tabs (Renamed Farm 1 to Megumi farm, Farm 2/3 kept)
+-- Generate Script Interface Layout Tabs
 local MegumiFarmTab = Window:CreateTab("Megumi farm", 4483362456)
 local ManualTab = Window:CreateTab("QOL Controls", 4483362456)
 local Farm1Tab = Window:CreateTab("Farm 1", 4483362456)
@@ -40,14 +40,15 @@ local Functions = ReplicatedStorage:WaitForChild("Functions", 5)
 local SpawnTowerFunction = Functions and Functions:WaitForChild("SpawnNewTower", 5)
 local UpgradeTowerFunction = Functions and Functions:WaitForChild("UpgradeTower", 5)
 
--- Global Database of Known Core Identifiers (Corrected & Deduped)
+-- Global Database of Known Core Identifiers (Updated with Dual Megumi variants)
 local UnitDatabase = {
     ["Sorcerer Agent"] = {ID = "da43ddf4-e433-4c63-85db-00c3baead3ba", Remote = "SorcererAgent"},
     ["Toji (Base)"]    = {ID = "295b7432-fe4b-4d9f-bb01-a4a5463318e7", Remote = "SorcererKiller"},
     ["Toji Evo"]        = {ID = "9670732c-4393-4a60-aa25-4feb0db974ef", Remote = "SorcererKillerEvo"},
     ["Gojo"]            = {ID = "729ac814-fab1-4814-bddf-53618f5c248d", Remote = "StrongestSorcerer"},
     ["Sukuna"]          = {ID = "9652f4cd-1993-475a-a232-c6e8f47d7a18", Remote = "KingOfCurses"},
-    ["Megumi"]          = {ID = "ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", Remote = "ShadowSorcerer"},
+    ["Megumi (UID 1)"]  = {ID = "ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", Remote = "ShadowSorcerer"},
+    ["Megumi (UID 2)"]  = {ID = "7d6b7aa0-7bd4-4d2f-99a6-4884bbde8c7d", Remote = "ShadowSorcerer"},
     ["Mahito"]          = {ID = "6a571a05-5703-40c9-8e17-18a51cb2b3c8", Remote = "SoulCurse"},
     ["Utahime"]         = {ID = "e95c062a-ccad-41d6-9086-738583900917", Remote = "AmplifyingSorcerer"},
     ["Guitar Sorcerer"] = {ID = "a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", Remote = "GuitarSorcerer"},
@@ -138,7 +139,6 @@ MegumiFarmTab:CreateToggle({ Name = "ENABLE V3 FARM LOOP", CurrentValue = false,
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V2 FARM LOOP", CurrentValue = false, Flag = "V2FarmLoop", Callback = function() end })
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V1 FARM LOOP", CurrentValue = false, Flag = "V1FarmLoop", Callback = function() end })
 
--- Execution engines for Megumi Farm Tab loops...
 task.spawn(function()
    while true do
       task.wait(1.0)
@@ -265,7 +265,6 @@ Farm1Tab:CreateToggle({
    Callback = function() end
 })
 
--- Auto loop runner for Farm 1 (1s loop delay)
 task.spawn(function()
    while true do
       task.wait(1.0)
@@ -360,7 +359,6 @@ CustomTab2:CreateToggle({
    Callback = function() end
 })
 
--- Auto loop runner for Farm 2
 task.spawn(function()
    while true do
       task.wait(1.0)
@@ -455,7 +453,6 @@ CustomTab3:CreateToggle({
    Callback = function() end
 })
 
--- Auto loop runner for Farm 3
 task.spawn(function()
    while true do
       task.wait(1.0)
