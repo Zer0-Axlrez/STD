@@ -1,9 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "STD Macro",
-   LoadingTitle = "Initializing Systems...",
-   LoadingSubtitle = "Configuring Useful Status...",
+   Name = "STD Macro - NiggerHub",
+   LoadingTitle = "Initializing Niggafied Bamboozled Systems...",
+   LoadingSubtitle = "Configuring Useful Slave Status...",
    DisableRayfieldPrompts = true,
    DisableIntro = true, 
    ConfigurationSaving = { 
