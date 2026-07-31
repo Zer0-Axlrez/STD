@@ -91,10 +91,8 @@ end
 local function RunCustomFarmLoop(positionsTable, prefix)
     if not SpawnTowerFunction then return end
     
-    -- Track both the server return instance and the selected unit info for each slot 1 -> 10
     local placedData = {}
 
-    -- 1. Place all 10 in order with 0.2s cd
     for i = 1, 10 do
         local selOpt = Rayfield.Flags[prefix .. "_UnitSelect_" .. tostring(i)] and Rayfield.Flags[prefix .. "_UnitSelect_" .. tostring(i)].CurrentOption[1] or ""
         local targetID = ""
@@ -129,19 +127,15 @@ local function RunCustomFarmLoop(positionsTable, prefix)
         end
     end
 
-    -- 2. Upgrade them 1 -> 10 sequentially based on the dropdown selection
     task.wait(0.5)
     for _, data in ipairs(placedData) do
         if UpgradeTowerFunction then
             pcall(function()
-                -- If the tower instance returned directly from SpawnNewTower is valid, invoke it directly
                 if typeof(data.Instance) == "Instance" then
                     UpgradeTowerFunction:InvokeServer(data.Instance)
                 elseif data.Record and data.Record.UpgradeName then
-                    -- Fallback: Search workspace for matching name if instance reference wasn't returned
                     AdvancedUpgrade(data.Record.UpgradeName)
                 elseif data.SelOpt == "Custom ID Input" then
-                    -- Generic fallback scan if custom ID was used
                     AdvancedUpgrade("ShadowSorcerer")
                 end
             end)
@@ -152,9 +146,37 @@ end
 
 -- ==================== MEGUMI FARM TAB ====================
 MegumiFarmTab:CreateSection("Preconfigured Farm Loops")
+MegumiFarmTab:CreateToggle({ Name = "ENABLE V4 FARM LOOP (Megumi Dual UID + Toji Evo)", CurrentValue = false, Flag = "V4FarmLoop", Callback = function() end })
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V3 FARM LOOP", CurrentValue = false, Flag = "V3FarmLoop", Callback = function() end })
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V2 FARM LOOP", CurrentValue = false, Flag = "V2FarmLoop", Callback = function() end })
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V1 FARM LOOP", CurrentValue = false, Flag = "V1FarmLoop", Callback = function() end })
+
+task.spawn(function()
+   while true do
+      task.wait(1.0)
+      if Rayfield.Flags and Rayfield.Flags.V4FarmLoop and Rayfield.Flags.V4FarmLoop.CurrentValue and SpawnTowerFunction then
+         -- Place Megumi UID 1
+         SpawnTowerFunction:InvokeServer("ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.5)
+         -- Place Megumi UID 2
+         SpawnTowerFunction:InvokeServer("7d6b7aa0-7bd4-4d2f-99a6-4884bbde8c7d", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.5)
+         -- Place Agents
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
+         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
+         AdvancedUpgrade("SorcererAgent") task.wait(0.1)
+         -- Place Sukuna
+         SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
+         -- Place Toji Evo
+         SpawnTowerFunction:InvokeServer("9670732c-4393-4a60-aa25-4feb0db974ef", CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.1)
+         AdvancedUpgrade("ShadowSorcerer") task.wait(0.1)
+         AdvancedUpgrade("KingOfCurses") task.wait(0.1)
+         AdvancedUpgrade("SorcererKillerEvo") task.wait(0.1)
+         if TojiEvoRemote then TojiEvoRemote:FireServer(Workspace, "Sword") end
+      end
+   end
+end)
 
 task.spawn(function()
    while true do
@@ -497,7 +519,7 @@ for i = 1, 10 do
       end
    })
    
-   val defOpt = i == 1 and "Sorcerer Agent" or "Custom ID Input"
+   local defOpt = i == 1 and "Sorcerer Agent" or "Custom ID Input"
    dropdownRef3 = CustomTab3:CreateDropdown({
       Name = "Choose Unit Template",
       Options = GetFilteredDropdownKeys(""),
