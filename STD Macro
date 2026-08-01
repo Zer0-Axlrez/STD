@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "STD Macro",
+   Name = "Orewa Josef Femboy-desu, bankai tenaki",
    LoadingTitle = "Initializing Systems...",
    LoadingSubtitle = "Configuring Useful Status...",
    DisableRayfieldPrompts = true,
@@ -40,20 +40,24 @@ local Functions = ReplicatedStorage:WaitForChild("Functions", 5)
 local SpawnTowerFunction = Functions and Functions:WaitForChild("SpawnNewTower", 5)
 local UpgradeTowerFunction = Functions and Functions:WaitForChild("UpgradeTower", 5)
 
--- Global Database of Known Core Identifiers
+-- Global Database of Known Core Identifiers (Expanded with Friend's Units & UIDs)
 local UnitDatabase = {
-    ["Sorcerer Agent"] = {ID = "da43ddf4-e433-4c63-85db-00c3baead3ba", UpgradeName = "SorcererAgent"},
-    ["Toji (Base)"]    = {ID = "295b7432-fe4b-4d9f-bb01-a4a5463318e7", UpgradeName = "SorcererKiller"},
-    ["Toji Evo"]        = {ID = "9670732c-4393-4a60-aa25-4feb0db974ef", UpgradeName = "SorcererKillerEvo"},
-    ["Gojo"]            = {ID = "729ac814-fab1-4814-bddf-53618f5c248d", UpgradeName = "StrongestSorcerer"},
-    ["Sukuna"]          = {ID = "9652f4cd-1993-475a-a232-c6e8f47d7a18", UpgradeName = "KingOfCurses"},
-    ["Megumi (UID 1)"]  = {ID = "ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", UpgradeName = "ShadowSorcerer"},
-    ["Megumi (UID 2)"]  = {ID = "7d6b7aa0-7bd4-4d2f-99a6-4884bbde8c7d", UpgradeName = "ShadowSorcerer"},
-    ["Mahito"]          = {ID = "6a571a05-5703-40c9-8e17-18a51cb2b3c8", UpgradeName = "SoulCurse"},
-    ["Utahime"]         = {ID = "e95c062a-ccad-41d6-9086-738583900917", UpgradeName = "AmplifyingSorcerer"},
-    ["Guitar Sorcerer"] = {ID = "a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", UpgradeName = "GuitarSorcerer"},
-    ["Momo"]            = {ID = "d343fc20-dc32-4e08-90eb-de8e3f9076ac", UpgradeName = "BroomSorcerer"},
-    ["Kirara"]          = {ID = "c247b6f3-ed09-43e6-91b3-aa902d157b9a", UpgradeName = "StarSorcerer"}
+    ["Sorcerer Agent (UID 1)"] = {ID = "da43ddf4-e433-4c63-85db-00c3baead3ba", UpgradeName = "SorcererAgent"},
+    ["Sorcerer Agent (UID 2)"] = {ID = "5a4cb482-f884-4012-bff6-6b4f70345bef", UpgradeName = "SorcererAgent"},
+    ["Toji (Base)"]            = {ID = "295b7432-fe4b-4d9f-bb01-a4a5463318e7", UpgradeName = "SorcererKiller"},
+    ["Toji Evo"]               = {ID = "9670732c-4393-4a60-aa25-4feb0db974ef", UpgradeName = "SorcererKillerEvo"},
+    ["Gojo"]                   = {ID = "729ac814-fab1-4814-bddf-53618f5c248d", UpgradeName = "StrongestSorcerer"},
+    ["Sukuna (Standard)"]      = {ID = "9652f4cd-1993-475a-a232-c6e8f47d7a18", UpgradeName = "KingOfCurses"},
+    ["Sukuna (Friend's UID)"]  = {ID = "a5653f2e-c5c0-4500-b402-769b65e8bebd", UpgradeName = "KingOfCurses"},
+    ["Frostkuna (Frost Sukuna)"] = {ID = "cebe37b1-cd0a-4be4-9154-cf2d64bc8519", UpgradeName = "KingOfCursesFrost"},
+    ["Hakari (Jackpot)"]       = {ID = "21260a0d-8020-4957-a68c-dbfd0acbbfa3", UpgradeName = "JackpotSorcerer"},
+    ["Megumi (UID 1)"]         = {ID = "ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", UpgradeName = "ShadowSorcerer"},
+    ["Megumi (UID 2)"]         = {ID = "7d6b7aa0-7bd4-4d2f-99a6-4884bbde8c7d", UpgradeName = "ShadowSorcerer"},
+    ["Mahito"]                 = {ID = "6a571a05-5703-40c9-8e17-18a51cb2b3c8", UpgradeName = "SoulCurse"},
+    ["Utahime"]                = {ID = "e95c062a-ccad-41d6-9086-738583900917", UpgradeName = "AmplifyingSorcerer"},
+    ["Guitar Sorcerer"]        = {ID = "a84e0c06-e7f3-4e9a-a3a9-592c2f4fc3db", UpgradeName = "GuitarSorcerer"},
+    ["Momo"]                   = {ID = "d343fc20-dc32-4e08-90eb-de8e3f9076ac", UpgradeName = "BroomSorcerer"},
+    ["Kirara"]                 = {ID = "c247b6f3-ed09-43e6-91b3-aa902d157b9a", UpgradeName = "StarSorcerer"}
 }
 
 -- Helper function to generate filtered and alphabetically sorted unit lists
@@ -108,20 +112,9 @@ local function RunCustomFarmLoop(positionsTable, prefix)
         local baseCF = positionsTable[i]
 
         if targetID ~= "" and baseCF then
-            if selOpt == "Sorcerer Agent" and i == 3 then
-                for agentCount = 0, 3 do
-                    local staggeredCF = baseCF * CFrame.new(agentCount * 4, 0, 0)
-                    local result = SpawnTowerFunction:InvokeServer(targetID, staggeredCF, nil)
-                    if result then 
-                        table.insert(placedData, {Instance = result, Record = unitRecord, SelOpt = selOpt}) 
-                    end
-                    task.wait(0.1)
-                end
-            else
-                local result = SpawnTowerFunction:InvokeServer(targetID, baseCF, nil)
-                if result then 
-                    table.insert(placedData, {Instance = result, Record = unitRecord, SelOpt = selOpt}) 
-                end
+            local result = SpawnTowerFunction:InvokeServer(targetID, baseCF, nil)
+            if result then 
+                table.insert(placedData, {Instance = result, Record = unitRecord, SelOpt = selOpt}) 
             end
             task.wait(0.2)
         end
@@ -135,8 +128,6 @@ local function RunCustomFarmLoop(positionsTable, prefix)
                     UpgradeTowerFunction:InvokeServer(data.Instance)
                 elseif data.Record and data.Record.UpgradeName then
                     AdvancedUpgrade(data.Record.UpgradeName)
-                elseif data.SelOpt == "Custom ID Input" then
-                    AdvancedUpgrade("ShadowSorcerer")
                 end
             end)
             task.wait(0.2)
@@ -144,12 +135,54 @@ local function RunCustomFarmLoop(positionsTable, prefix)
     end
 end
 
--- ==================== MEGUMI FARM TAB ====================
+-- ==================== MEGUMI FARM TAB (Updated with V5 Sequence: Hakari -> Agent -> Sukuna -> Frostkuna -> Toji) ====================
 MegumiFarmTab:CreateSection("Preconfigured Farm Loops")
+MegumiFarmTab:CreateToggle({ Name = "ENABLE V5 FARM LOOP (Hakari -> Agent -> Sukuna -> Frostkuna -> Toji)", CurrentValue = false, Flag = "V5FarmLoop", Callback = function() end })
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V4 FARM LOOP (Megumi Dual UID + Toji Evo)", CurrentValue = false, Flag = "V4FarmLoop", Callback = function() end })
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V3 FARM LOOP", CurrentValue = false, Flag = "V3FarmLoop", Callback = function() end })
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V2 FARM LOOP", CurrentValue = false, Flag = "V2FarmLoop", Callback = function() end })
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V1 FARM LOOP", CurrentValue = false, Flag = "V1FarmLoop", Callback = function() end })
+
+task.spawn(function()
+   while true do
+      task.wait(1.0)
+      if Rayfield.Flags and Rayfield.Flags.V5FarmLoop and Rayfield.Flags.V5FarmLoop.CurrentValue and SpawnTowerFunction then
+         -- 1. Place Hakari (JackpotSorcerer)
+         SpawnTowerFunction:InvokeServer("21260a0d-8020-4957-a68c-dbfd0acbbfa3", CFrame.new(48.466865539551, 8.5099277496338, -143.89291381836, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.4)
+         
+         -- 2. Place Agent (UID 2 with stacked multi-placement)
+         for agentCount = 0, 3 do
+            local agentCF = CFrame.new(67.569808959961 + (agentCount * 4), 8.5106153488159, -150.53570556641, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
+            SpawnTowerFunction:InvokeServer("5a4cb482-f884-4012-bff6-6b4f70345bef", agentCF, nil)
+            task.wait(0.1)
+         end
+         AdvancedUpgrade("SorcererAgent")
+         task.wait(0.4)
+
+         -- 3. Place Friend's Sukuna
+         SpawnTowerFunction:InvokeServer("a5653f2e-c5c0-4500-b402-769b65e8bebd", CFrame.new(52.766284942627, 8.5529260635376, -161.04357910156, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.4)
+
+         -- 4. Place Frostkuna (Frost Sukuna)
+         SpawnTowerFunction:InvokeServer("cebe37b1-cd0a-4be4-9154-cf2d64bc8519", CFrame.new(47.434455871582, 8.5529298782349, -153.84823608398, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.4)
+
+         -- 5. Place Toji (Borrowed)
+         SpawnTowerFunction:InvokeServer("295b7432-fe4b-4d9f-bb01-a4a5463318e7", CFrame.new(44.81685256958, 8.5099258422852, -145.46769714355, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.5)
+
+         -- Upgrade Sequence: Hakari -> Sukuna -> Frostkuna -> Toji
+         AdvancedUpgrade("JackpotSorcerer")
+         task.wait(0.2)
+         AdvancedUpgrade("KingOfCurses")
+         task.wait(0.2)
+         AdvancedUpgrade("KingOfCursesFrost")
+         task.wait(0.2)
+         AdvancedUpgrade("SorcererKiller")
+      end
+   end
+end)
 
 task.spawn(function()
    while true do
@@ -279,7 +312,7 @@ ManualTab:CreateButton({
          local RootPart = LocalPlayer.Character.HumanoidRootPart
          local Point = RootPart.Position
          local CF = CFrame.new(Point.X, Point.Y - 3.2, Point.Z, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
-         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CF, nil)
+         SpawnTowerFunction:InvokeServer("5a4cb482-f884-4012-bff6-6b4f70345bef", CF, nil)
       end
    end
 })
@@ -331,7 +364,7 @@ for i = 1, 10 do
       end
    })
    
-   local defOpt = i == 3 and "Sorcerer Agent" or "Custom ID Input"
+   local defOpt = i == 3 and "Sorcerer Agent (UID 2)" or "Custom ID Input"
    dropdownRef1 = Farm1Tab:CreateDropdown({
       Name = "Choose Unit Template",
       Options = GetFilteredDropdownKeys(""),
@@ -425,7 +458,7 @@ for i = 1, 10 do
       end
    })
    
-   local defOpt = i == 1 and "Sorcerer Agent" or "Custom ID Input"
+   local defOpt = i == 1 and "Sorcerer Agent (UID 2)" or "Custom ID Input"
    dropdownRef2 = CustomTab2:CreateDropdown({
       Name = "Choose Unit Template",
       Options = GetFilteredDropdownKeys(""),
@@ -519,7 +552,7 @@ for i = 1, 10 do
       end
    })
    
-   local defOpt = i == 1 and "Sorcerer Agent" or "Custom ID Input"
+   local defOpt = i == 1 and "Sorcerer Agent (UID 2)" or "Custom ID Input"
    dropdownRef3 = CustomTab3:CreateDropdown({
       Name = "Choose Unit Template",
       Options = GetFilteredDropdownKeys(""),
@@ -566,7 +599,7 @@ CustomTab3:CreateButton({
 
 CustomTab3:CreateInput({
    Name = "Profile Configuration Name",
-   PlaceholderText = "Enter configuration label...",
+   PlaceholderText = "Enter configuration label, bankai tenaki...",
    RemoveTextAfterFocusLost = false,
    Flag = "Tab3_ProfileLabel",
    Callback = function() end
