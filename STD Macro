@@ -40,7 +40,7 @@ local Functions = ReplicatedStorage:WaitForChild("Functions", 5)
 local SpawnTowerFunction = Functions and Functions:WaitForChild("SpawnNewTower", 5)
 local UpgradeTowerFunction = Functions and Functions:WaitForChild("UpgradeTower", 5)
 
--- Global Database of Known Core Identifiers (Expanded with Friend's Units & UIDs)
+-- Global Database of Known Core Identifiers
 local UnitDatabase = {
     ["Sorcerer Agent (UID 1)"] = {ID = "da43ddf4-e433-4c63-85db-00c3baead3ba", UpgradeName = "SorcererAgent"},
     ["Sorcerer Agent (UID 2)"] = {ID = "5a4cb482-f884-4012-bff6-6b4f70345bef", UpgradeName = "SorcererAgent"},
@@ -60,7 +60,6 @@ local UnitDatabase = {
     ["Kirara"]                 = {ID = "c247b6f3-ed09-43e6-91b3-aa902d157b9a", UpgradeName = "StarSorcerer"}
 }
 
--- Helper function to generate filtered and alphabetically sorted unit lists
 local function GetFilteredDropdownKeys(filterText)
     local keys = {"Custom ID Input"}
     for name, _ in pairs(UnitDatabase) do
@@ -91,7 +90,6 @@ local function AdvancedUpgrade(TargetName)
    end
 end
 
--- Helper execution sequence runner for sequential placement and upgrading
 local function RunCustomFarmLoop(positionsTable, prefix)
     if not SpawnTowerFunction then return end
     
@@ -135,23 +133,21 @@ local function RunCustomFarmLoop(positionsTable, prefix)
     end
 end
 
--- ==================== MEGUMI FARM TAB (Updated with V5 Sequence: Hakari -> Agent -> Sukuna -> Frostkuna -> Toji) ====================
+-- ==================== MEGUMI FARM TAB ====================
 MegumiFarmTab:CreateSection("Preconfigured Farm Loops")
-MegumiFarmTab:CreateToggle({ Name = "ENABLE V5 FARM LOOP (Hakari -> Agent -> Sukuna -> Frostkuna -> Toji)", CurrentValue = false, Flag = "V5FarmLoop", Callback = function() end })
-MegumiFarmTab:CreateToggle({ Name = "ENABLE V4 FARM LOOP (Megumi Dual UID + Toji Evo)", CurrentValue = false, Flag = "V4FarmLoop", Callback = function() end })
+MegumiFarmTab:CreateToggle({ Name = "ENABLE V5 FARM LOOP", CurrentValue = false, Flag = "V5FarmLoop", Callback = function() end })
+MegumiFarmTab:CreateToggle({ Name = "ENABLE V4 FARM LOOP (Updated: Swapped Sukuna/EvoToji, 4 Agents, Utahime Stacked & Evo Toji Sword)", CurrentValue = false, Flag = "V4FarmLoop", Callback = function() end })
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V3 FARM LOOP", CurrentValue = false, Flag = "V3FarmLoop", Callback = function() end })
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V2 FARM LOOP", CurrentValue = false, Flag = "V2FarmLoop", Callback = function() end })
 MegumiFarmTab:CreateToggle({ Name = "ENABLE V1 FARM LOOP", CurrentValue = false, Flag = "V1FarmLoop", Callback = function() end })
 
+-- V5 Loop (Preserved)
 task.spawn(function()
    while true do
       task.wait(1.0)
       if Rayfield.Flags and Rayfield.Flags.V5FarmLoop and Rayfield.Flags.V5FarmLoop.CurrentValue and SpawnTowerFunction then
-         -- 1. Place Hakari (JackpotSorcerer)
          SpawnTowerFunction:InvokeServer("21260a0d-8020-4957-a68c-dbfd0acbbfa3", CFrame.new(48.466865539551, 8.5099277496338, -143.89291381836, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.4)
-         
-         -- 2. Place Agent (UID 2 with stacked multi-placement)
          for agentCount = 0, 3 do
             local agentCF = CFrame.new(67.569808959961 + (agentCount * 4), 8.5106153488159, -150.53570556641, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
             SpawnTowerFunction:InvokeServer("5a4cb482-f884-4012-bff6-6b4f70345bef", agentCF, nil)
@@ -159,20 +155,12 @@ task.spawn(function()
          end
          AdvancedUpgrade("SorcererAgent")
          task.wait(0.4)
-
-         -- 3. Place Friend's Sukuna
          SpawnTowerFunction:InvokeServer("a5653f2e-c5c0-4500-b402-769b65e8bebd", CFrame.new(52.766284942627, 8.5529260635376, -161.04357910156, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.4)
-
-         -- 4. Place Frostkuna (Frost Sukuna)
          SpawnTowerFunction:InvokeServer("cebe37b1-cd0a-4be4-9154-cf2d64bc8519", CFrame.new(47.434455871582, 8.5529298782349, -153.84823608398, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.4)
-
-         -- 5. Place Toji (Borrowed)
          SpawnTowerFunction:InvokeServer("295b7432-fe4b-4d9f-bb01-a4a5463318e7", CFrame.new(44.81685256958, 8.5099258422852, -145.46769714355, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.5)
-
-         -- Upgrade Sequence: Hakari -> Sukuna -> Frostkuna -> Toji
          AdvancedUpgrade("JackpotSorcerer")
          task.wait(0.2)
          AdvancedUpgrade("KingOfCurses")
@@ -184,29 +172,59 @@ task.spawn(function()
    end
 end)
 
+-- ==================== UPDATED V4 FARM LOOP ====================
 task.spawn(function()
    while true do
       task.wait(1.0)
       if Rayfield.Flags and Rayfield.Flags.V4FarmLoop and Rayfield.Flags.V4FarmLoop.CurrentValue and SpawnTowerFunction then
-         -- Place Megumi UID 1
+         -- 1. Place Megumi UID 1
          SpawnTowerFunction:InvokeServer("ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.5)
-         -- Place Megumi UID 2
+         
+         -- 2. Place Megumi UID 2
          SpawnTowerFunction:InvokeServer("7d6b7aa0-7bd4-4d2f-99a6-4884bbde8c7d", CFrame.new(31.656806945801, 8.5099258422852, -144.29830932617, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.5)
-         -- Place Agents
-         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
-         SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
-         AdvancedUpgrade("SorcererAgent") task.wait(0.1)
-         -- Place Sukuna
-         SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil) task.wait(0.1)
-         -- Place Toji Evo
-         SpawnTowerFunction:InvokeServer("9670732c-4393-4a60-aa25-4feb0db974ef", CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         
+         -- 3. Place 4 Agents (Stacked/spaced slightly or same coordinate depending on user layout preference, using multi-step offsets)
+         local agentPositions = {
+            CFrame.new(54.921741485596, 8.5106115341187, -145.73199462891, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),
+            CFrame.new(50.945652008057, 8.510612487793, -145.82522583008, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),
+            CFrame.new(46.969585418701, 8.510612487793, -145.1955871582, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1),
+            CFrame.new(41.046390533447, 8.5106134414673, -145.1208190918, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
+         }
+         for _, agentCF in ipairs(agentPositions) do
+            SpawnTowerFunction:InvokeServer("da43ddf4-e433-4c63-85db-00c3baead3ba", agentCF, nil)
+            task.wait(0.1)
+         end
+         AdvancedUpgrade("SorcererAgent")
+         task.wait(0.2)
+
+         -- 4. Place Toji Evo (Swapped to Sukuna's former position slot)
+         SpawnTowerFunction:InvokeServer("9670732c-4393-4a60-aa25-4feb0db974ef", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.2)
+
+         -- 5. Fire Toji Sword Remote right after placement
+         if TojiEvoRemote then 
+            TojiEvoRemote:FireServer(Workspace, "Sword") 
+         end
+         task.wait(0.2)
+
+         -- 6. Place Sukuna (Swapped to Toji Evo's former position slot)
+         SpawnTowerFunction:InvokeServer("9652f4cd-1993-475a-a232-c6e8f47d7a18", CFrame.new(50.264389038086, 8.5099277496338, -161.94427490234, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.2)
+
+         -- 7. Place Utahime (Stacked on Evo Toji's position coordinate)
+         SpawnTowerFunction:InvokeServer("e95c062a-ccad-41d6-9086-738583900917", CFrame.new(49.752197265625, 8.5529279708862, -157.58764648438, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.2)
+
+         -- Upgrades
+         AdvancedUpgrade("ShadowSorcerer") 
          task.wait(0.1)
-         AdvancedUpgrade("ShadowSorcerer") task.wait(0.1)
-         AdvancedUpgrade("KingOfCurses") task.wait(0.1)
-         AdvancedUpgrade("SorcererKillerEvo") task.wait(0.1)
-         if TojiEvoRemote then TojiEvoRemote:FireServer(Workspace, "Sword") end
+         AdvancedUpgrade("KingOfCurses") 
+         task.wait(0.1)
+         AdvancedUpgrade("SorcererKillerEvo") 
+         task.wait(0.1)
+         AdvancedUpgrade("AmplifyingSorcerer")
       end
    end
 end)
@@ -276,7 +294,7 @@ task.spawn(function()
    end
 end)
 
--- ==================== MANUAL TAB (QOL Controls) ====================
+-- ==================== MANUAL TAB ====================
 ManualTab:CreateSection("Automation Services")
 ManualTab:CreateToggle({
    Name = "Auto Skip Waves",
@@ -324,9 +342,7 @@ ManualTab:CreateButton({
 })
 
 
--- ====================================================================
--- FARM 1 TAB
--- ====================================================================
+-- ==================== FARM 1 TAB ====================
 local PositionsFarm1 = {}
 
 Farm1Tab:CreateSection("Automation Toggle")
@@ -418,9 +434,7 @@ Farm1Tab:CreateInput({
 })
 
 
--- ====================================================================
--- CUSTOM TAB 2 (Farm 2)
--- ====================================================================
+-- ==================== CUSTOM TAB 2 (Farm 2) ====================
 local PositionsTab2 = {}
 
 CustomTab2:CreateSection("Automation Toggle")
@@ -512,9 +526,7 @@ CustomTab2:CreateInput({
 })
 
 
--- ====================================================================
--- CUSTOM TAB 3 (Farm 3)
--- ====================================================================
+-- ==================== CUSTOM TAB 3 (Farm 3) ====================
 local PositionsTab3 = {}
 
 CustomTab3:CreateSection("Automation Toggle")
