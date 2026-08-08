@@ -98,6 +98,21 @@ local function AdvancedUpgrade(TargetName, count)
    end
 end
 
+local function CountExistingTowers(targetName)
+   local count = 0
+   local folders = {Workspace:FindFirstChild("Towers"), Workspace:FindFirstChild("PlacedTowers"), Workspace:FindFirstChild("Units"), Workspace}
+   for _, folder in pairs(folders) do
+      if folder then
+         for _, Object in pairs(folder:GetChildren()) do
+            if Object and Object.Name and string.find(string.lower(Object.Name), string.lower(targetName)) then
+               count = count + 1
+            end
+         end
+      end
+   end
+   return count
+end
+
 local function RunCustomFarmLoop(positionsTable, prefix)
     if not SpawnTowerFunction then return end
     
@@ -166,9 +181,11 @@ task.spawn(function()
             task.wait(0.2)
          end
 
-         -- 3. Place Wealth Sorcerer
-         SpawnTowerFunction:InvokeServer("5c9e2974-9f51-4879-bf42-56ee3971b304", CFrame.new(67.102531433105, 8.6099262237549, -144.17620849609, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-         task.wait(0.2)
+         -- 3. Place Wealth Sorcerer (Only if zero Wealth Sorcerers exist in game workspace)
+         if CountExistingTowers("WealthSorcerer") == 0 then
+            SpawnTowerFunction:InvokeServer("5c9e2974-9f51-4879-bf42-56ee3971b304", CFrame.new(67.102531433105, 8.6099262237549, -144.17620849609, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            task.wait(0.2)
+         end
 
          -- 4. Upgrade both Agent and Wealth (both get upgraded twice)
          AdvancedUpgrade("SorcererAgent", 2)
@@ -621,7 +638,7 @@ for i = 1, 10 do
    CustomTab3:CreateInput({
       Name = "Secret Target ID (If Custom Selected)",
       PlaceholderText = "Paste alternative UID here...",
-      RemoveTextAfterFocusLost = false,
+      RemoveTextAuthorized = false,
       Flag = "Tab3_SecretID_" .. tostring(i),
       Callback = function() end
    })
@@ -636,7 +653,7 @@ for i = 1, 10 do
             local RootPart = LocalPlayer.Character.HumanoidRootPart
             local Point = RootPart.Position
             local ComputedCFrame = CFrame.new(Point.X, Point.Y - 3.2, Point.Z, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
-            PositionsTab3[i] = ComputedCField
+            PositionsTab3[i] = ComputedCFrame
             coordLbl3:Set(string.format("Position logged: Vector: %.2f, %.2f, %.2f", Point.X, Point.Y, Point.Z))
          end
       end
