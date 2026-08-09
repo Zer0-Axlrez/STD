@@ -19,6 +19,7 @@ local ManualTab = Window:CreateTab("QOL Controls", 4483362456)
 local Farm1Tab = Window:CreateTab("Farm 1", 4483362456)
 local CustomTab2 = Window:CreateTab("Farm 2", 4483362456)
 local CustomTab3 = Window:CreateTab("Farm 3", 4483362456)
+local OldFarmsTab = Window:CreateTab("OLD FARMS", 4483362456)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -40,20 +41,22 @@ local Functions = ReplicatedStorage:WaitForChild("Functions", 5)
 local SpawnTowerFunction = Functions and Functions:WaitForChild("SpawnNewTower", 5)
 local UpgradeTowerFunction = Functions and Functions:WaitForChild("UpgradeTower", 5)
 
--- Global Database of Known Core Identifiers (Updated with new UID 3 units and Wealth Sorcerer)
+-- Global Database of Known Core Identifiers (Updated with new UID 3 units, Wealth Sorcerer, and V5 updates)
 local UnitDatabase = {
     ["Sorcerer Agent (UID 1)"]        = {ID = "da43ddf4-e433-4c63-85db-00c3baead3ba", UpgradeName = "SorcererAgent"},
     ["Sorcerer Agent (UID 2)"]        = {ID = "5a4cb482-f884-4012-bff6-6b4f70345bef", UpgradeName = "SorcererAgent"},
     ["Sorcerer Agent (UID 3 - V6)"]   = {ID = "c5a11204-69b2-4562-b845-810b5648038e", UpgradeName = "SorcererAgent"},
     ["Toji (Base)"]                   = {ID = "295b7432-fe4b-4d9f-bb01-a4a5463318e7", UpgradeName = "SorcererKiller"},
     ["Toji Evo"]                      = {ID = "9670732c-4393-4a60-aa25-4feb0db974ef", UpgradeName = "SorcererKillerEvo"},
+    ["Toji Evo (V5)"]                 = {ID = "fb3ed906-3776-4459-8073-f7eada1deb27", UpgradeName = "SorcererKillerEvo"},
     ["Gojo"]                          = {ID = "729ac814-fab1-4814-bddf-53618f5c248d", UpgradeName = "StrongestSorcerer"},
     ["Evojo (Strongest Sorcerer Evo)"]= {ID = "af9b325c-05a8-4762-ad9f-932819684b56", UpgradeName = "StrongestSorcererEvo"},
     ["Sukuna (Standard)"]             = {ID = "9652f4cd-1993-475a-a232-c6e8f47d7a18", UpgradeName = "KingOfCurses"},
     ["Sukuna (UID 3 - V6)"]           = {ID = "1868a304-1f98-46f4-9096-77f9bb7179b4", UpgradeName = "KingOfCurses"},
-    ["Sukuna (Friend's UID)"]         = {ID = "a5653f2e-c5c0-4500-b402-769b65e8bebd", UpgradeName = "KingOfCurses"},
+    ["Sukuna (V5)"]                   = {ID = "a5653f2e-c5c0-4500-b402-769b65e8bebd", UpgradeName = "KingOfCurses"},
     ["Frostkuna (Frost Sukuna)"]      = {ID = "cebe37b1-cd0a-4be4-9154-cf2d64bc8519", UpgradeName = "KingOfCursesFrost"},
-    ["Hakari (Jackpot)"]              = {ID = "21260a0d-8020-4957-a68c-dbfd0acbbfa3", UpgradeName = "JackpotSorcerer"},
+    ["Hakari (OLD V5)"]               = {ID = "21260a0d-8020-4957-a68c-dbfd0acbbfa3", UpgradeName = "JackpotSorcerer"},
+    ["Hakari (V5)"]                   = {ID = "21260a0d-8020-4957-a68c-dbfd0acbbfa3", UpgradeName = "JackpotSorcerer"},
     ["Megumi (UID 1)"]                = {ID = "ac1df0a2-6ba4-4d6b-b358-0bdd9c6c7c6f", UpgradeName = "ShadowSorcerer"},
     ["Megumi (UID 2)"]                = {ID = "7d6b7aa0-7bd4-4d2f-99a6-4884bbde8c7d", UpgradeName = "ShadowSorcerer"},
     ["Megumi (UID 3 - V6)"]           = {ID = "4d45cd3d-ac21-4762-9b25-8369a3557bed", UpgradeName = "ShadowSorcerer"},
@@ -158,12 +161,8 @@ end
 
 -- ==================== MEGUMI FARM TAB ====================
 MegumiFarmTab:CreateSection("Preconfigured Farm Loops")
-MegumiFarmTab:CreateToggle({ Name = "ENABLE V6 FARM LOOP (Mikey)", CurrentValue = false, Flag = "V6FarmLoop", Callback = function() end })
-MegumiFarmTab:CreateToggle({ Name = "ENABLE V5 FARM LOOP", CurrentValue = false, Flag = "V5FarmLoop", Callback = function() end })
-MegumiFarmTab:CreateToggle({ Name = "ENABLE V4 FARM LOOP", CurrentValue = false, Flag = "V4FarmLoop", Callback = function() end })
-MegumiFarmTab:CreateToggle({ Name = "ENABLE V3 FARM LOOP", CurrentValue = false, Flag = "V3FarmLoop", Callback = function() end })
-MegumiFarmTab:CreateToggle({ Name = "ENABLE V2 FARM LOOP", CurrentValue = false, Flag = "V2FarmLoop", Callback = function() end })
-MegumiFarmTab:CreateToggle({ Name = "ENABLE V1 FARM LOOP", CurrentValue = false, Flag = "V1FarmLoop", Callback = function() end })
+MegumiFarmTab:CreateToggle({ Name = "V6 FARM  (Mikey)", CurrentValue = false, Flag = "V6FarmLoop", Callback = function() end })
+MegumiFarmTab:CreateToggle({ Name = "V5 FARM  (Jorey)", CurrentValue = false, Flag = "V5FarmLoop", Callback = function() end })
 
 -- ==================== V6 FARM LOOP (MIKEY) ====================
 task.spawn(function()
@@ -181,10 +180,14 @@ task.spawn(function()
             task.wait(0.2)
          end
 
-         -- 3. Place Wealth Sorcerer (Only if zero Wealth Sorcerers exist in game workspace)
+         -- 3. Place Wealth Sorcerer (Only if zero Wealth Sorcerers exist in game workspace and runs safely once)
          if CountExistingTowers("WealthSorcerer") == 0 then
-            SpawnTowerFunction:InvokeServer("5c9e2974-9f51-4879-bf42-56ee3971b304", CFrame.new(67.102531433105, 8.6099262237549, -144.17620849609, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
-            task.wait(0.2)
+            local wealthSuccess = pcall(function()
+               SpawnTowerFunction:InvokeServer("5c9e2974-9f51-4879-bf42-56ee3971b304", CFrame.new(67.102531433105, 8.6099262237549, -144.17620849609, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+            end)
+            if wealthSuccess then
+               task.wait(0.2)
+            end
          end
 
          -- 4. Upgrade both Agent and Wealth (both get upgraded twice)
@@ -211,12 +214,12 @@ task.spawn(function()
    end
 end)
 
--- V5 Loop (Preserved)
+-- V5 Loop (Jorey)
 task.spawn(function()
    while true do
       task.wait(1.0)
       if Rayfield.Flags and Rayfield.Flags.V5FarmLoop and Rayfield.Flags.V5FarmLoop.CurrentValue and SpawnTowerFunction then
-         SpawnTowerFunction:InvokeServer("21260a0d-8020-4957-a68c-dbfd0acbbfa3", CFrame.new(48.466865539551, 8.5099277496338, -143.89291381836, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         SpawnTowerFunction:InvokeServer("21260a0d-8020-4957-a68c-dbfd0acbbfa3", CFrame.new(50.435371398926, 8.5099277496338, -142.52780151367, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.4)
          for agentCount = 0, 3 do
             local agentCF = CFrame.new(67.569808959961 + (agentCount * 4), 8.5106153488159, -150.53570556641, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
@@ -229,7 +232,7 @@ task.spawn(function()
          task.wait(0.4)
          SpawnTowerFunction:InvokeServer("cebe37b1-cd0a-4be4-9154-cf2d64bc8519", CFrame.new(47.434455871582, 8.5529298782349, -153.84823608398, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.4)
-         SpawnTowerFunction:InvokeServer("295b7432-fe4b-4d9f-bb01-a4a5463318e7", CFrame.new(44.81685256958, 8.5099258422852, -145.46769714355, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         SpawnTowerFunction:InvokeServer("fb3ed906-3776-4459-8073-f7eada1deb27", CFrame.new(47.29084777832, 8.5099258422852, -160.83941650391, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
          task.wait(0.5)
          AdvancedUpgrade("JackpotSorcerer", 1)
          task.wait(0.2)
@@ -237,10 +240,17 @@ task.spawn(function()
          task.wait(0.2)
          AdvancedUpgrade("KingOfCursesFrost", 1)
          task.wait(0.2)
-         AdvancedUpgrade("SorcererKiller", 1)
+         AdvancedUpgrade("SorcererKillerEvo", 1)
       end
    end
 end)
+
+-- ==================== OLD FARMS TAB (V1 - V4 Moved Here) ====================
+OldFarmsTab:CreateSection("Legacy Farm Loops (V1 - V4)")
+OldFarmsTab:CreateToggle({ Name = "ENABLE V4 FARM LOOP", CurrentValue = false, Flag = "V4FarmLoop", Callback = function() end })
+OldFarmsTab:CreateToggle({ Name = "ENABLE V3 FARM LOOP", CurrentValue = false, Flag = "V3FarmLoop", Callback = function() end })
+OldFarmsTab:CreateToggle({ Name = "ENABLE V2 FARM LOOP", CurrentValue = false, Flag = "V2FarmLoop", Callback = function() end })
+OldFarmsTab:CreateToggle({ Name = "ENABLE V1 FARM LOOP", CurrentValue = false, Flag = "V1FarmLoop", Callback = function() end })
 
 -- V4 Farm Loop
 task.spawn(function()
@@ -290,6 +300,7 @@ task.spawn(function()
    end
 end)
 
+-- V3 Farm Loop
 task.spawn(function()
    while true do
       task.wait(1.0)
@@ -316,6 +327,7 @@ task.spawn(function()
    end
 end)
 
+-- V2 Farm Loop
 task.spawn(function()
    while true do
       task.wait(0.1)
@@ -341,6 +353,7 @@ task.spawn(function()
    end
 end)
 
+-- V1 Farm Loop
 task.spawn(function()
    while true do
       task.wait(1.0) 
