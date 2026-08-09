@@ -160,9 +160,14 @@ local function RunCustomFarmLoop(positionsTable, prefix)
 end
 
 -- ==================== MEGUMI FARM TAB ====================
-MegumiFarmTab:CreateSection("Preconfigured Farm Loops")
-MegumiFarmTab:CreateToggle({ Name = "V6 FARM  (Mikey)", CurrentValue = false, Flag = "V6FarmLoop", Callback = function() end })
-MegumiFarmTab:CreateToggle({ Name = "V5 FARM  (Jorey)", CurrentValue = false, Flag = "V5FarmLoop", Callback = function() end })
+MegumiFarmTab:CreateSection("Mikey farms")
+MegumiFarmTab:CreateToggle({ Name = "Farm V6", CurrentValue = false, Flag = "V6FarmLoop", Callback = function() end })
+MegumiFarmTab:CreateToggle({ Name = "Farm Challenge", CurrentValue = false, Flag = "FarmChallengeLoop", Callback = function() end })
+
+MegumiFarmTab:CreateDivider()
+
+MegumiFarmTab:CreateSection("Jorey Farms")
+MegumiFarmTab:CreateToggle({ Name = "Farm V5", CurrentValue = false, Flag = "V5FarmLoop", Callback = function() end })
 
 -- ==================== V6 FARM LOOP (MIKEY) ====================
 task.spawn(function()
@@ -210,6 +215,49 @@ task.spawn(function()
          AdvancedUpgrade("KingOfCurses", 1)
          task.wait(0.2)
          AdvancedUpgrade("ShadowSorcerer", 1)
+      end
+   end
+end)
+
+-- ==================== FARM CHALLENGE LOOP ====================
+task.spawn(function()
+   while true do
+      task.wait(1.0)
+      if Rayfield.Flags and Rayfield.Flags.FarmChallengeLoop and Rayfield.Flags.FarmChallengeLoop.CurrentValue and SpawnTowerFunction then
+         -- 1. Place Megumi
+         SpawnTowerFunction:InvokeServer("4d45cd3d-ac21-4762-9b25-8369a3557bed", CFrame.new(-50.399627685547, 13.622692108154, -97.755958557129, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.2)
+
+         -- 2. Place 4x Agents (stacked)
+         local agentCF = CFrame.new(-28.596828460693, 13.623376846313, -68.76880645752, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1)
+         for i = 1, 4 do
+            SpawnTowerFunction:InvokeServer("c5a11204-69b2-4562-b845-810b5648038e", agentCF, nil)
+            task.wait(0.1)
+         end
+         task.wait(0.2)
+
+         -- 3. Place Wealth Sorcerer
+         SpawnTowerFunction:InvokeServer("5c9e2974-9f51-4879-bf42-56ee3971b304", CFrame.new(-23.270362854004, 13.722692489624, -71.678749084473, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.2)
+
+         -- 4. Place Evojo
+         SpawnTowerFunction:InvokeServer("af9b325c-05a8-4762-ad9f-932819684b56", CFrame.new(-33.096160888672, 13.622692108154, -89.399017333984, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.2)
+
+         -- 5. Place Sukuna
+         SpawnTowerFunction:InvokeServer("1868a304-1f98-46f4-9096-77f9bb7179b4", CFrame.new(-38.533340454102, 13.665692329407, -88.093544006348, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(0.2)
+
+         -- 6. Upgrades sequence: Upgrade Agents -> Evojo -> Wealth -> Evojo -> Sukuna
+         AdvancedUpgrade("SorcererAgent", 1)
+         task.wait(0.2)
+         AdvancedUpgrade("StrongestSorcererEvo", 1)
+         task.wait(0.2)
+         AdvancedUpgrade("WealthSorcerer", 1)
+         task.wait(0.2)
+         AdvancedUpgrade("StrongestSorcererEvo", 1)
+         task.wait(0.2)
+         AdvancedUpgrade("KingOfCurses", 1)
       end
    end
 end)
@@ -651,7 +699,7 @@ for i = 1, 10 do
    CustomTab3:CreateInput({
       Name = "Secret Target ID (If Custom Selected)",
       PlaceholderText = "Paste alternative UID here...",
-      RemoveTextAuthorized = false,
+      RemoveTextAfterFocusLost = false,
       Flag = "Tab3_SecretID_" .. tostring(i),
       Callback = function() end
    })
@@ -685,7 +733,7 @@ CustomTab3:CreateButton({
 
 CustomTab3:CreateInput({
    Name = "Profile Configuration Name",
-   PlaceholderText = "Enter configuration label, bankai tenaki...",
+   PlaceholderText = "Enter configuration label...",
    RemoveTextAfterFocusLost = false,
    Flag = "Tab3_ProfileLabel",
    Callback = function() end
