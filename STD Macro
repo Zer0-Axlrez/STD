@@ -166,8 +166,30 @@ MegumiFarmTab:CreateToggle({ Name = "Farm Challenge", CurrentValue = false, Flag
 
 MegumiFarmTab:CreateDivider()
 
+MegumiFarmTab:CreateSection("Standalone Actions")
+MegumiFarmTab:CreateToggle({ 
+   Name = "Place Meg (Toggleable)", 
+   CurrentValue = false, 
+   Flag = "PlaceMegToggle", 
+   Callback = function() end 
+})
+
+MegumiFarmTab:CreateDivider()
+
 MegumiFarmTab:CreateSection("Jorey Farms")
 MegumiFarmTab:CreateToggle({ Name = "Farm V5", CurrentValue = false, Flag = "V5FarmLoop", Callback = function() end })
+
+-- ==================== STANDALONE PLACE MEG LOOP ====================
+task.spawn(function()
+   while true do
+      task.wait(1.0)
+      if Rayfield.Flags and Rayfield.Flags.PlaceMegToggle and Rayfield.Flags.PlaceMegToggle.CurrentValue and SpawnTowerFunction then
+         -- Uses the V6 Megumi UID and coordinates (adjust coordinates if needed)
+         SpawnTowerFunction:InvokeServer("4d45cd3d-ac21-4762-9b25-8369a3557bed", CFrame.new(29.74781036377, 8.5099277496338, -148.95980834961, -1, 0, -8.7422776573476e-08, 0, 1, 0, 8.7422776573476e-08, 0, -1), nil)
+         task.wait(2.0) -- Prevents spamming the remote server continuously in a single second tick
+      end
+   end
+end)
 
 -- ==================== V6 FARM LOOP (MIKEY) ====================
 task.spawn(function()
@@ -604,7 +626,7 @@ for i = 1, 10 do
       Callback = function() end
    })
 
-   CustomTab2:CreateInput({
+    CustomTab2:CreateInput({
       Name = "Secret Target ID (If Custom Selected)",
       PlaceholderText = "Paste alternative UID here...",
       RemoveTextAfterFocusLost = false,
